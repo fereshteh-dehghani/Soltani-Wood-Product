@@ -1,0 +1,39 @@
+@font-face {
+    font-family: 'yekan';
+    src: url('./YekanBakhFaNum-Light.eot');
+    src: url('./YekanBakhFaNum-Light.eot?#iefix') format('embedded-opentype'),
+        url('./YekanBakhFaNum-Light.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'yekan';
+    src: url('./YekanBakhFaNum-Medium.eot');
+    src: url('./YekanBakhFaNum-Medium.eot?#iefix') format('embedded-opentype'),
+        url('./YekanBakhFaNum-Medium.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'yekan';
+    src: url('./YekanBakhFaNum-Bold.eot');
+    src: url('./YekanBakhFaNum-Bold.eot?#iefix') format('embedded-opentype'),
+        url('./YekanBakhFaNum-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* 
+
+html[lang="fa"] body {
+    font-family: yekan;
+}
+html[lang="fa"] body * {
+    word-spacing: 0;
+    letter-spacing: 0;
+} */

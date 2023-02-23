@@ -1,0 +1,97 @@
+/* input box styles (color,font,....) */
+
+.muirtl-10vdeej-MuiInputBase-input-MuiOutlinedInput-input {
+    color: black !important;
+    font-size: 16px !important;
+    font-weight: 500;
+}
+
+.input-style {
+    color: black !important;
+    font-size: 16px !important;
+    font-weight: 400 !important;
+}
+
+.input-style input {
+    color: black !important;
+    font-size: 14px !important;
+    font-weight: 400 !important;
+}
+
+
+/* select boxes ........ */
+
+.muirtl-1s2u09g-control {
+    border-color: black !important;
+}
+
+.muirtl-6j8wv5-Input {
+    color: black !important;
+}
+
+/* header modal -------- */
+
+.Modal-Header {
+    background-color: #06ccc9b9 !important;
+}
+
+#react-select-19-listbox {
+    background-color: black !important;
+}
+
+
+/* Header color---------- */
+
+.header-bgColor {
+    background-color: #252F3E !important;
+}
+
+.MuiInputLabel-root {
+    z-index: 0 !important;
+}
+
+#owner-label {
+    z-index: 0 !important;
+}
+
+.MuiFormLabel-root {
+    z-index: 0 !important;
+}
+
+#react-select-4-listbox {
+    z-index: 100 !important;
+}
+
+#react-select-3-listbox {
+    z-index: 100 !important;
+}
+
+#react-select-5-listbox {
+    z-index: 100 !important;
+}
+
+/* Button styles --------------- */
+
+#CustomBtn {
+    border-radius: 20px !important;
+    box-sizing: border-box !important;
+    padding: 10px 15px !important;
+    white-space: nowrap !important;
+    cursor: pointer !important;
+}
+
+#CustomBtn:hover {
+    background-image: linear-gradient(144deg, #AF40FF, #5B42F3 50%, #00DDEB) !important;
+    transition: all 0.5s;
+}
+
+.modal-header-style {
+    background-color:#00BCD4 !important;
+    width: 100% !important;
+    height: 15% !important;
+    color: #ff0051 !important;
+    font-size: large !important;
+    font-weight:600px !important;
+    margin:0 !important;
+    padding: 5px !important;
+}
