@@ -1,11 +1,20 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
 import { styled, alpha } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Divider from '@mui/material/Divider';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import ReceiveAndPay from './payment-method-modals/ReceiveAndPayModal';
+import CashPayment from './payment-method-modals/CashPayment';
+import CreditMethod from './payment-method-modals/CreditModal';
+import PayAndReceiveByCardBank from './payment-method-modals/PayAndRecieveByBank';
+import PayAndReceiveByCheck from './payment-method-modals/PayAndReceiveByCheck';
+import PayOrReceiveAsDiscount from './payment-method-modals/PayOrRecieveAsDiscount';
+import DepositToAccount from './payment-method-modals/DepositToTheAccount';
+import { handleModals } from '../../store/handleModalsSlice';
+import TransferMethod from './payment-method-modals/TransferMethod';
 
 const StyledMenu = styled((props) => (
   <Menu
@@ -44,10 +53,27 @@ const StyledMenu = styled((props) => (
   },
 }));
 
-export default function CustomizedMenus() {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [modalOpenReceiveAndPay, setModalOpenReceiveAndPay] = useState(false);
+export default function CustomizedMenus({
+  optionSelectBank,
+  operationOptions,
+  cashList,
+  addCommas,
+  convertPriceToNumber,
+  removeNonNumeric
+}) {
 
+
+  const {
+    modalOpenCashPayment,
+    handleCreditModal,
+    handleCardBank,
+    handleMethodCheck,
+    handleMethodDiscount,
+    handleDepositToTheAccount,
+    handleTransferMethod
+  } = useSelector(({ buyAndSell }) => buyAndSell.handleModalsSlice)
+  const [anchorEl, setAnchorEl] = useState(null);
+  const dispatch = useDispatch();
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -59,7 +85,7 @@ export default function CustomizedMenus() {
 
   return (
     <>
-      <div>
+      <div style={{ marginTop: '10' }}>
         <Button
           id="demo-customized-button"
           aria-controls={open ? 'demo-customized-menu' : undefined}
@@ -84,70 +110,135 @@ export default function CustomizedMenus() {
           onClose={handleClose}
         >
           <MenuItem
+            key={1}
             onClick={() => {
-              setModalOpenReceiveAndPay(true);
+              dispatch(handleModals({ type: 'cash', isOpen: true }))
               handleClose();
             }}
-            disableRipple
           >
             نقدی
           </MenuItem>
           <Divider sx={{ my: 0.5 }} />
-          <MenuItem onClick={handleClose} disableRipple>
+          <MenuItem key={2} onClick={() => {
+
+            dispatch(handleModals({ type: 'credit', isOpen: true }))
+            handleClose();
+          }}
+          >
             اعتباری
           </MenuItem>
-          <MenuItem onClick={handleClose} disableRipple>
-            قسطی
-          </MenuItem>
-          <MenuItem onClick={handleClose} disableRipple>
-            انتقال از/به حساب شخص
-          </MenuItem>
           <Divider sx={{ my: 0.5 }} />
-          <MenuItem onClick={handleClose} disableRipple>
-            پرداخت چک
-          </MenuItem>
-          <MenuItem onClick={handleClose} disableRipple>
-            مرجوع چک پرداختی
-          </MenuItem>
-          <Divider sx={{ my: 0.5 }} />
-          <MenuItem onClick={handleClose} disableRipple>
+          <MenuItem key={3} onClick={() => {
+            dispatch(handleModals({ type: 'cardBank', isOpen: true }))
+            handleClose();
+          }}
+          >
             کارت بانکی
           </MenuItem>
-          <MenuItem onClick={handleClose} disableRipple>
-            واریز به حساب(دریافت)
-          </MenuItem>
-          <MenuItem onClick={handleClose} disableRipple>
-            پرداخت دریافت از بانک/اینترنتی
+          <Divider sx={{ my: 0.5 }} />
+          <MenuItem
+            key={4}
+            onClick={() => {
+              dispatch(handleModals({ type: 'check', isOpen: true }))
+              handleClose();
+            }}
+          >
+            پرداخت چک
           </MenuItem>
           <Divider sx={{ my: 0.5 }} />
-          <MenuItem onClick={handleClose} disableRipple>
-            دریافت چک
-          </MenuItem>
-          <MenuItem onClick={handleClose} disableRipple>
-            خرج چک
-          </MenuItem>
-          <MenuItem onClick={handleClose} disableRipple>
-            مرجوع چک خرجی
-          </MenuItem>
-          <Divider sx={{ my: 0.5 }} />
-
-          <MenuItem onClick={handleClose} disableRipple>
+          <MenuItem
+            key={5}
+            onClick={() => {
+              dispatch(handleModals({ type: 'discount', isOpen: true }))
+              handleClose();
+            }}
+          >
             تخفیف
           </MenuItem>
-          <MenuItem onClick={handleClose} disableRipple>
-            درآمد/هزینه
-          </MenuItem>
-          <MenuItem onClick={handleClose} disableRipple>
-            سند(سایرحسابها)
+          <Divider sx={{ my: 0.5 }} />
+          <MenuItem
+            key={6}
+            onClick={() => {
+              dispatch(handleModals({ type: 'transfer', isOpen: true }))
+              handleClose();
+            }}
+          >
+            واریز به حساب
           </MenuItem>
         </StyledMenu>
       </div>
-      {modalOpenReceiveAndPay && (
-        <ReceiveAndPay
-          openModal={modalOpenReceiveAndPay}
-          closeHandler={() => setModalOpenReceiveAndPay(false)}
+      {modalOpenCashPayment && (
+        <CashPayment
+          paymentMethodData={{}}
+          operationOptions={operationOptions}
+          cashList={cashList}
+          addCommas={addCommas}
+          removeNonNumeric={removeNonNumeric}
+          convertPriceToNumber={removeNonNumeric}
         />
       )}
+      {handleCreditModal &&
+        <CreditMethod
+          paymentMethodData={{}}
+          operationOptions={operationOptions}
+          addCommas={addCommas}
+          removeNonNumeric={removeNonNumeric}
+          convertPriceToNumber={removeNonNumeric}
+        />
+      }
+      {handleCardBank &&
+        <PayAndReceiveByCardBank
+          optionSelectBank={optionSelectBank}
+          paymentMethodData={{}}
+          operationOptions={operationOptions}
+          addCommas={addCommas}
+          removeNonNumeric={removeNonNumeric}
+          convertPriceToNumber={removeNonNumeric}
+
+        />
+      }
+
+      {handleMethodCheck &&
+        < PayAndReceiveByCheck
+          paymentMethodData={{}}
+          addCommas={addCommas}
+          removeNonNumeric={removeNonNumeric}
+          convertPriceToNumber={removeNonNumeric}
+        />
+      }
+
+      {handleMethodDiscount &&
+        <PayOrReceiveAsDiscount
+          paymentMethodData={{}}
+          operationOptions={operationOptions}
+          addCommas={addCommas}
+          removeNonNumeric={removeNonNumeric}
+          convertPriceToNumber={removeNonNumeric}
+
+        />
+      }
+
+      {handleDepositToTheAccount &&
+        <DepositToAccount
+          optionSelectBank={optionSelectBank}
+          paymentMethodData={{}}
+          addCommas={addCommas}
+          removeNonNumeric={removeNonNumeric}
+          convertPriceToNumber={removeNonNumeric}
+        />
+
+      }
+      {handleTransferMethod &&
+        <TransferMethod
+          paymentMethodData={{}}
+          operationOptions={operationOptions}
+          cashList={cashList}
+          addCommas={addCommas}
+          removeNonNumeric={removeNonNumeric}
+          convertPriceToNumber={removeNonNumeric}
+        />
+      }
+
     </>
   );
 }

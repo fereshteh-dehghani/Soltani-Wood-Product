@@ -7,7 +7,8 @@ import { showMessage } from 'app/store/fuse/messageSlice';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
 import withRouter from '@fuse/core/withRouter';
-import { Link, NavLink } from 'react-router-dom';
+import 'ag-grid-enterprise';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import {
   apiUrlAddUserInformation,
   apiUrlChangeActiveUser,
@@ -17,7 +18,20 @@ import {
 } from 'app/services/jwtService/defaultValues';
 import { Switch } from '@mui/material';
 import axios from 'axios';
+import {
+  BorderColorOutlined,
+  BusinessOutlined,
+  ContactMailOutlined,
+  DeleteForeverOutlined,
+  EditOutlined,
+  PermDeviceInformationOutlined,
+} from '@mui/icons-material';
+import _ from 'lodash';
 import { Button, Spacer } from '@nextui-org/react';
+import { useTheme } from 'styled-components';
+import { useDispatch, useSelector } from 'react-redux';
+import { navbarToggle, navbarToggleMobile } from 'app/store/fuse/navbarSlice';
+import { setDefaultSettings } from 'app/store/fuse/settingsSlice';
 import UserInformation from './userInformation';
 import ChangeAddress from './changeAddress';
 import ChangeRole from './changeRole';
@@ -33,6 +47,7 @@ function UsersTable() {
   const [rowData, setRowData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState();
+  const [dataUser, setDataUser] = useState([]);
   const isTrue = true;
   const [isChangeUserRoles, setisChangeUserRoles] = useState();
   const [openModalChangeAddrress, setOpenModalChangeAddrress] = useState(false);
@@ -49,6 +64,26 @@ function UsersTable() {
   //     [name]: value,
   //   });
   // }
+
+  const dispatch = useDispatch();
+
+  // ---------------------------------------
+  const theme = useTheme();
+  // const mdDown = useMediaQuery(theme.breakpoints.down('lg'));
+  const settings = useSelector(({ fuse }) => fuse.settings.current);
+  const { config } = settings.layout;
+  useEffect(() => {
+    dispatch(navbarToggleMobile());
+    if (config.navbar.style === 'style-2') {
+      dispatch(
+        setDefaultSettings(
+          _.set({}, 'layout.config.navbar.folded', !settings.layout.config.navbar.folded)
+        )
+      );
+    } else {
+      dispatch(navbarToggle());
+    }
+  }, []);
 
   const onGridReady = useEffect(() => {
     axios
@@ -350,8 +385,7 @@ function UsersTable() {
       >
         اطلاعات جانبی
       </Button>
-      // <div>
-      //         // </div>
+
     );
     return tagItem;
   }
@@ -408,9 +442,47 @@ function UsersTable() {
     );
     return tagItem;
   }
+
+  function changeRole2(UI) {
+    const rolsIds = [];
+    dataUser.roles.forEach((x) => rolsIds.push(x.id));
+    <ChangeRole userId={UI} userRolesId={rolsIds} handleClick={updateGrid} />;
+  }
+
+  // Ag Grid onContext Menu***********************
+
+  const getContextMenuItems = useCallback(() => {
+    const result = [
+      {
+        name: 'اطلاعات جانبی',
+        action: () => {
+          updateUserProfile(dataUser)
+        },
+      },
+      {
+        name: ' ویرایش اطلاعات  ',
+        action: () => {},
+        icon: <EditOutlined />,
+      },
+      {
+        name: ' آدرس کاربر  ',
+        action: () => {},
+        icon: <EditOutlined />,
+      },
+      {
+        name: ' تغییر نقش  ',
+        action: () => {},
+        icon: <EditOutlined />,
+      },
+    ];
+    return result;
+  }, []);
+
+  // *********************************************
+
   const gridRef = useRef();
   const containerStyle = useMemo(() => ({ width: '100%', height: '100%' }), []);
-  const gridStyle = useMemo(() => ({ height: 400 }), []);
+  const gridStyle = useMemo(() => ({ height: 550 }), []);
   const defaultColDef = useMemo(() => {
     return {
       flex: 1,
@@ -449,19 +521,19 @@ function UsersTable() {
       field: 'isActive',
       headerName: 'وضعیت کاربری',
       cellRenderer: userStatus,
-      minWidth: 150,
+      minWidth: 120,
     },
     {
       field: 'lockoutEnabled',
       headerName: 'امکان قفل شدن اکانت',
       cellRenderer: possibilityOfLockingAccount,
-      minWidth: 180,
+      minWidth: 120,
     },
     {
       field: 'twoFactorEnabled',
       headerName: 'اعتبار سنجی دو مرحله ای',
       cellRenderer: twoStepValidation,
-      minWidth: 200,
+      minWidth: 120,
     },
     {
       field: 'userInformation',
@@ -508,6 +580,14 @@ function UsersTable() {
               onGridReady={onGridReady}
               onFirstDataRendered={onFirstDataRendered}
               paginationNumberFormatter={paginationNumberFormatter}
+              allowContextMenuWithControlKey="true"
+              getContextMenuItems={getContextMenuItems}
+              onCellContextMenu={(e) => {
+                // handleUserId(e)
+                setUserId(e.data.id);
+                setDataUser(e.data);
+              }}
+              resizable
               paginationAutoPageSize={isTrue}
               pivotPanelShow="always"
               pagination={isTrue}

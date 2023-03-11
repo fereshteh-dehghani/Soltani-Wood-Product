@@ -6,7 +6,10 @@ import { Grid } from '@mui/material';
 import { showMessage } from 'app/store/fuse/messageSlice';
 import { Button, Modal, Spacer, Text, Checkbox } from '@nextui-org/react';
 import { useDispatch } from 'react-redux';
+<<<<<<< HEAD
+=======
 import '../../../../../styles/MyStyles.css';
+>>>>>>> 82f2ca86fa050c0c7f55ecb0b2ba2655cc1021f6
 
 const styleButtonForText = {
   'font-size': '12px',
@@ -156,11 +159,14 @@ const ChangeRole = ({ userId, userRolesId, handleClick }) => {
     <div>
       <Spacer y={0.5} />
 
-      <Button shadow color="default" onClick={handler} css={styleButtonForText} size="md">
+      <Button shadow color="gradient" onClick={handler} css={styleButtonForText} size="md">
         تغییر نقش
       </Button>
       <Modal
+<<<<<<< HEAD
+=======
         style={{ paddingTop: '0px' }}
+>>>>>>> 82f2ca86fa050c0c7f55ecb0b2ba2655cc1021f6
         closeButton
         preventClose
         width="50%"
@@ -168,11 +174,16 @@ const ChangeRole = ({ userId, userRolesId, handleClick }) => {
         open={visible}
         onClose={closeHandler}
       >
+<<<<<<< HEAD
+        <Modal.Header>
+          <Text size={20}> تغییر نقش</Text>
+=======
         <Modal.Header className="Modal-Header">
           <Text size={20} style={{ color: '#fff' }}>
             {' '}
             تغییر نقش
           </Text>
+>>>>>>> 82f2ca86fa050c0c7f55ecb0b2ba2655cc1021f6
         </Modal.Header>
         <Modal.Body>
           <form>
@@ -182,7 +193,7 @@ const ChangeRole = ({ userId, userRolesId, handleClick }) => {
                   const { id, name } = roles.role;
                   const isEnabled = userRolesId.findIndex((o) => o === id) !== -1;
                   return (
-                    <Grid item xs={6}>
+                    <Grid item xs={12}>
                       <Checkbox
                         color="gradient"
                         defaultSelected={isEnabled}
@@ -200,7 +211,10 @@ const ChangeRole = ({ userId, userRolesId, handleClick }) => {
         </Modal.Body>
         <Modal.Footer>
           <Button
+<<<<<<< HEAD
+=======
             id="CustomBtn"
+>>>>>>> 82f2ca86fa050c0c7f55ecb0b2ba2655cc1021f6
             size="lg"
             onClick={(e) => {
               onChangeRole();
@@ -208,7 +222,11 @@ const ChangeRole = ({ userId, userRolesId, handleClick }) => {
           >
             تغییر نقش
           </Button>
+<<<<<<< HEAD
+          <Button color="error" size="lg" onClick={() => setVisible(false)}>
+=======
           <Button id="CustomBtn" color="error" size="lg" onClick={() => setVisible(false)}>
+>>>>>>> 82f2ca86fa050c0c7f55ecb0b2ba2655cc1021f6
             انصراف
           </Button>
         </Modal.Footer>

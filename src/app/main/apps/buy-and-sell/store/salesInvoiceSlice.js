@@ -21,7 +21,17 @@ const salesInvoiceSlice = createSlice({
     },
     updateInvoiceItems(state, action) {
       const updatedList = state.invoiceItems.map((p) => {
-        if (p.id === action.payload.id || p.saleInvoiceId === action.payload.saleInvoiceId) p = action.payload;
+        if (
+          (p.id !== '' &&
+            p.id === action.payload.id &&
+            p.id !== undefined &&
+            action.payload.id !== undefined) ||
+          (p.saleInvoiceItemId !== undefined &&
+            p.saleInvoiceItemId !== '' &&
+            action.payload.saleInvoiceItemId !== undefined &&
+            p.saleInvoiceItemId === action.payload.saleInvoiceItemId)
+        )
+          p = action.payload;
         return p;
       });
       state.invoiceItems = [...updatedList];

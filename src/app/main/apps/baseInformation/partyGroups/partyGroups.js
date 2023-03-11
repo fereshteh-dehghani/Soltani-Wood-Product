@@ -9,6 +9,7 @@ import PartyGroupsTable from './partyGroupsTable'
 import { fetchPartyGroupSubList } from '../store/partyGroupSlice';
 
 
+
 const Root = styled(FusePageCarded)(({ theme }) => ({
   '& .FusePageCarded-header': {
     minHeight: 60,

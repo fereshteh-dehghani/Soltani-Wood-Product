@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux'
+import { useDispatch } from 'react-redux';
 import { Modal, Input, Row, Button, Text, Spacer } from '@nextui-org/react';
 import { Grid } from '@mui/material';
 import FuseScrollbars from '@fuse/core/FuseScrollbars';
@@ -15,13 +15,25 @@ import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
 import { showMessage } from 'app/store/fuse/messageSlice';
 import Select from 'react-select';
 
+
+const styleButtonForText1 = {
+  'font-size': '13px',
+  'color': 'black',
+  'z-index': '1',
+  'width': '200px',
+  'margin-top' : '2rem',
+  'margin-right' : '1rem',
+};
+
 const styleButtonForText = {
   'font-size': '13px',
-  'color' : 'black'
+  'color': 'black',
+  'z-index': '1',
+  'width': '200px',
 };
 const styleInputText = {
-  'font-size': '14px',
-  'border': '1px solid black'
+  'font-size': '15px',
+  border: '1px solid black',
 };
 
 const defaultValues = {
@@ -41,7 +53,7 @@ const UserInformation = ({ userId, modalOpen, closeHandler }) => {
   const [userInfo, setUserInfo] = useState({});
   const [visible, setVisible] = useState(false);
   const gridRef = useRef();
-  const gridStyleR = useMemo(() => ({ height: 400  }), []);
+  const gridStyleR = useMemo(() => ({ height: 300 }), []);
   const [rowData, setRowData] = useState();
   const [txtFormBtn, setTxtFormBtn] = useState('ذخیره');
   const [modalTitle, setModalTitle] = useState('اطلاعات جانبی');
@@ -50,7 +62,6 @@ const UserInformation = ({ userId, modalOpen, closeHandler }) => {
   const [responseUpdate, setResponseUpdate] = useState({});
 
   const onGridReady = useEffect(() => {
-
     if (userId !== undefined) {
       try {
         axios
@@ -59,17 +70,18 @@ const UserInformation = ({ userId, modalOpen, closeHandler }) => {
             if (response !== null && response.status === 200) {
               if (response.data !== null && response.data.status === 0) {
                 setRowData([...response.data.result]);
-              }
-              else {
-                dispatch(showMessage({
-                  message: 'خطا در گرفتن اطلاعات',
-                  autoHideDuration: 6000,
-                  anchorOrigin: {
-                    vertical: 'top',
-                    horizontal: 'right',
-                  },
-                  variant: 'alert',
-                }));
+              } else {
+                dispatch(
+                  showMessage({
+                    message: 'خطا در گرفتن اطلاعات',
+                    autoHideDuration: 6000,
+                    anchorOrigin: {
+                      vertical: 'top',
+                      horizontal: 'right',
+                    },
+                    variant: 'alert',
+                  })
+                );
               }
             } else {
               dispatch(
@@ -87,21 +99,22 @@ const UserInformation = ({ userId, modalOpen, closeHandler }) => {
           })
           .catch((err) => {
             console.log(err);
-          })
+          });
       } catch (error2) {
-        dispatch(showMessage({
-          message: error2.message,
-          autoHideDuration: 6000,
-          anchorOrigin: {
-            vertical: 'top',
-            horizontal: 'right',
-          },
-          variant: 'alert',
-        }));
+        dispatch(
+          showMessage({
+            message: error2.message,
+            autoHideDuration: 6000,
+            anchorOrigin: {
+              vertical: 'top',
+              horizontal: 'right',
+            },
+            variant: 'alert',
+          })
+        );
       }
     }
   }, [responseUpdate]);
-
 
   const changelabelSelect = (value) => options.filter((option) => option.value === value);
 
@@ -131,26 +144,30 @@ const UserInformation = ({ userId, modalOpen, closeHandler }) => {
               setResponseUpdate(response.data);
               setUserInfo({ propertyValue: '', propertyName: '' });
             } else {
-              dispatch(showMessage({
-                message: 'ویرایش اطلاعات با خطا انجام شد',
+              dispatch(
+                showMessage({
+                  message: 'ویرایش اطلاعات با خطا انجام شد',
+                  autoHideDuration: 6000,
+                  anchorOrigin: {
+                    vertical: 'top',
+                    horizontal: 'right',
+                  },
+                  variant: 'alert',
+                })
+              );
+            }
+          } else {
+            dispatch(
+              showMessage({
+                message: 'خطایی در فرایند  ویرایش اطلاعات رخ داده است',
                 autoHideDuration: 6000,
                 anchorOrigin: {
                   vertical: 'top',
                   horizontal: 'right',
                 },
                 variant: 'alert',
-              }));
-            }
-          } else {
-            dispatch(showMessage({
-              message: 'خطایی در فرایند  ویرایش اطلاعات رخ داده است',
-              autoHideDuration: 6000,
-              anchorOrigin: {
-                vertical: 'top',
-                horizontal: 'right',
-              },
-              variant: 'alert',
-            }));
+              })
+            );
           }
         })
         .catch((erroere) => {
@@ -168,15 +185,17 @@ const UserInformation = ({ userId, modalOpen, closeHandler }) => {
           );
         });
     } catch (error2) {
-      dispatch(showMessage({
-        message: 'خطا در ویرایش اطلاعات',
-        autoHideDuration: 6000,
-        anchorOrigin: {
-          vertical: 'top',
-          horizontal: 'right',
-        },
-        variant: 'alert',
-      }));
+      dispatch(
+        showMessage({
+          message: 'خطا در ویرایش اطلاعات',
+          autoHideDuration: 6000,
+          anchorOrigin: {
+            vertical: 'top',
+            horizontal: 'right',
+          },
+          variant: 'alert',
+        })
+      );
     }
   };
 
@@ -192,73 +211,85 @@ const UserInformation = ({ userId, modalOpen, closeHandler }) => {
           if (response !== null && response.status === 200) {
             const addUserInfoRes = response.data;
             if (addUserInfoRes !== null && addUserInfoRes.status === 0) {
-              setUserInfo({propertyName:'',propertyValue:''});
-              dispatch(showMessage({
-                message: 'اطلاعات با موفقیت اضافه شد',
-                autoHideDuration: 6000,
-                anchorOrigin: {
-                  vertical: 'top',
-                  horizontal: 'right',
-                },
-                variant: 'success',
-              }));
+              setUserInfo({ propertyName: '', propertyValue: '' });
+              dispatch(
+                showMessage({
+                  message: 'اطلاعات با موفقیت اضافه شد',
+                  autoHideDuration: 6000,
+                  anchorOrigin: {
+                    vertical: 'top',
+                    horizontal: 'right',
+                  },
+                  variant: 'success',
+                })
+              );
 
-              setResponseUpdate(response.data)
+              setResponseUpdate(response.data);
             } else if (addUserInfoRes === null) {
-              dispatch(showMessage({
-                message: 'عملیات ناموفق ',
-                autoHideDuration: 6000,
-                anchorOrigin: {
-                  vertical: 'top',
-                  horizontal: 'right',
-                },
-                variant: 'success',
-              }));
+              dispatch(
+                showMessage({
+                  message: 'عملیات ناموفق ',
+                  autoHideDuration: 6000,
+                  anchorOrigin: {
+                    vertical: 'top',
+                    horizontal: 'right',
+                  },
+                  variant: 'success',
+                })
+              );
             } else {
-              dispatch(showMessage({
-                message: 'عملیات ناموفق ',
+              dispatch(
+                showMessage({
+                  message: 'عملیات ناموفق ',
+                  autoHideDuration: 6000,
+                  anchorOrigin: {
+                    vertical: 'top',
+                    horizontal: 'right',
+                  },
+                  variant: 'alert',
+                })
+              );
+            }
+          } else {
+            dispatch(
+              showMessage({
+                message: 'خطایی در فرایند  اضافه کردن اطلاعات رخ داده است',
                 autoHideDuration: 6000,
                 anchorOrigin: {
                   vertical: 'top',
                   horizontal: 'right',
                 },
                 variant: 'alert',
-              }));
-            }
-          } else {
-            dispatch(showMessage({
-              message: 'خطایی در فرایند  اضافه کردن اطلاعات رخ داده است',
+              })
+            );
+          }
+        })
+        .catch((erroere) => {
+          console.log(erroere);
+          dispatch(
+            showMessage({
+              message: 'خطا در  فرایند عملیات',
               autoHideDuration: 6000,
               anchorOrigin: {
                 vertical: 'top',
                 horizontal: 'right',
               },
               variant: 'alert',
-            }));
-          }
-        })
-        .catch((erroere) => {
-          console.log(erroere);
-          dispatch(showMessage({
-            message: 'خطا در  فرایند عملیات',
-            autoHideDuration: 6000,
-            anchorOrigin: {
-              vertical: 'top',
-              horizontal: 'right',
-            },
-            variant: 'alert',
-          }));
+            })
+          );
         });
     } catch (error2) {
-      dispatch(showMessage({
-        message: 'خطا در  فرایند عملیات',
-        autoHideDuration: 6000,
-        anchorOrigin: {
-          vertical: 'top',
-          horizontal: 'right',
-        },
-        variant: 'alert',
-      }));
+      dispatch(
+        showMessage({
+          message: 'خطا در  فرایند عملیات',
+          autoHideDuration: 6000,
+          anchorOrigin: {
+            vertical: 'top',
+            horizontal: 'right',
+          },
+          variant: 'alert',
+        })
+      );
     }
   };
 
@@ -273,60 +304,70 @@ const UserInformation = ({ userId, modalOpen, closeHandler }) => {
           if (response !== null && response.status === 200) {
             const deleteUserInfoRes = response.data;
             if (deleteUserInfoRes !== null && deleteUserInfoRes.status === 0) {
-              dispatch(showMessage({
-                message: 'حذف با موفقیت انجام شد',
-                autoHideDuration: 6000,
-                anchorOrigin: {
-                  vertical: 'top',
-                  horizontal: 'right',
-                },
-                variant: 'alert',
-              }));
+              dispatch(
+                showMessage({
+                  message: 'حذف با موفقیت انجام شد',
+                  autoHideDuration: 6000,
+                  anchorOrigin: {
+                    vertical: 'top',
+                    horizontal: 'right',
+                  },
+                  variant: 'alert',
+                })
+              );
               setResponseUpdate(deleteUserInfo);
             } else if (deleteUserInfoRes === null) {
-              dispatch(showMessage({
-                message: 'خطا در حذف اطلاعات',
-                autoHideDuration: 6000,
-                anchorOrigin: {
-                  vertical: 'top',
-                  horizontal: 'right',
-                },
-                variant: 'alert',
-              }));
+              dispatch(
+                showMessage({
+                  message: 'خطا در حذف اطلاعات',
+                  autoHideDuration: 6000,
+                  anchorOrigin: {
+                    vertical: 'top',
+                    horizontal: 'right',
+                  },
+                  variant: 'alert',
+                })
+              );
             } else {
-              dispatch(showMessage({
-                message: 'خطایی در فرایند حذف اطلاعات رخ داده است',
-                autoHideDuration: 6000,
-                anchorOrigin: {
-                  vertical: 'top',
-                  horizontal: 'right',
-                },
-                variant: 'alert',
-              }));
+              dispatch(
+                showMessage({
+                  message: 'خطایی در فرایند حذف اطلاعات رخ داده است',
+                  autoHideDuration: 6000,
+                  anchorOrigin: {
+                    vertical: 'top',
+                    horizontal: 'right',
+                  },
+                  variant: 'alert',
+                })
+              );
             }
           }
         })
         .catch((erroere) => {
-          dispatch(showMessage({
-            message: erroere.message,
-            autoHideDuration: 6000,
-            anchorOrigin: {
-              vertical: 'top',
-              horizontal: 'right',
-            },
-            variant: 'alert',
-          }));
+          dispatch(
+            showMessage({
+              message: erroere.message,
+              autoHideDuration: 6000,
+              anchorOrigin: {
+                vertical: 'top',
+                horizontal: 'right',
+              },
+              variant: 'alert',
+            })
+          );
         });
     } catch (error2) {
-      dispatch(showMessage({
-        message: error2.message,
-        autoHideDuration: 6000,
-        anchorOrigin: {
-          vertical: 'top',
-          horizontal: 'right',
-        },
-        variant: 'alert',
-      }));
+      dispatch(
+        showMessage({
+          message: error2.message,
+          autoHideDuration: 6000,
+          anchorOrigin: {
+            vertical: 'top',
+            horizontal: 'right',
+          },
+          variant: 'alert',
+        })
+      );
     }
   };
 
@@ -412,6 +453,7 @@ const UserInformation = ({ userId, modalOpen, closeHandler }) => {
     <div>
       <Spacer y={0.2} />
       <Modal
+        style={{ paddingTop: '0px' }}
         closeButton
         preventClose
         width="60%"
@@ -419,33 +461,29 @@ const UserInformation = ({ userId, modalOpen, closeHandler }) => {
         open={modalOpen}
         onClose={closeHandler}
       >
-        <Modal.Header>
+        <Modal.Header className="Modal-Header">
           <Text size={18}>{modalTitle}</Text>
         </Modal.Header>
         <Modal.Body>
           <Grid container spacing={2}>
-            <Grid item xs={8}>
+            <Grid item xs={4}>
               <Input
                 value={userInfo.propertyValue}
                 // clearable
                 bordered
                 fullWidth
                 css={styleInputText}
-                size="xxl"
                 placeholder="مقدار"
                 onChange={(e) => setUserInfo({ ...userInfo, propertyValue: e.target.value })}
               />
             </Grid>
-            <Spacer y={2} />
-            <Grid item xs={12}>
+            <Grid item xs={4}>
               <Select
                 label="نوع اطلاعات"
                 inputId="aria-example-input"
                 aria-labelledby="aria-label"
                 className="basic-single"
                 classNamePrefix="select"
-                style={{ width: '500px' }}
-                isRtl={isRtlSelect}
                 options={options}
                 value={options.filter((opt) => opt.value === userInfo.propertyName)}
                 onChange={(e) => {
@@ -456,13 +494,10 @@ const UserInformation = ({ userId, modalOpen, closeHandler }) => {
                 }}
               />
             </Grid>
-          </Grid>
-
-          <Button
-            width="400px"
-            size="lg"
+            <Button
+            width="200px"
             color="secondary"
-            css={styleButtonForText}
+            css={styleButtonForText1}
             onPress={() => {
               if (userInfo.id !== undefined) {
                 onUserInformationUpdate();
@@ -473,6 +508,7 @@ const UserInformation = ({ userId, modalOpen, closeHandler }) => {
           >
             {txtFormBtn}
           </Button>
+          </Grid>
 
           <Row justify="space-between">
             <FuseScrollbars className="grow overflow-x-auto">
@@ -491,7 +527,7 @@ const UserInformation = ({ userId, modalOpen, closeHandler }) => {
           </Row>
         </Modal.Body>
         <Modal.Footer>
-          <Button size="lg" css={styleButtonForText} flat color="error" onClick={closeHandler}>
+          <Button size="lg" css={styleButtonForText} flat onClick={closeHandler}>
             انصراف
           </Button>
         </Modal.Footer>

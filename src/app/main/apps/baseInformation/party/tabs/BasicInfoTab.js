@@ -1,248 +1,267 @@
-import { AccountCircle, CheckBox } from "@mui/icons-material";
-import { useDispatch, useSelector } from "react-redux";
-import { FormControl, FormControlLabel, FormLabel, Grid, Radio, RadioGroup, TextField, FormGroup, Checkbox, Container } from "@mui/material";
-import { useEffect, useState } from "react";
+import { AccountCircle, CheckBox } from '@mui/icons-material';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  Grid,
+  Radio,
+  RadioGroup,
+  TextField,
+  FormGroup,
+  Checkbox,
+  Container,
+  MenuItem,
+} from '@mui/material';
+import { Spacer } from '@nextui-org/react';
+import { useEffect, useState } from 'react';
 import { useFormContext, Controller, useForm } from 'react-hook-form';
 import Select from 'react-select';
-import { fetchPartyGroupJustChildList } from "../../store/partyGroupSlice";
+import { fetchPartyGroupJustChildList } from '../../store/partyGroupSlice';
 
 const BasicInfoTab = () => {
-    const methods = useFormContext();
-    const { control, formState, setValue, getValue, watch } = methods;
-    const typeParty = watch('type');
-    const isCustomerParty = watch('isCustomer');
-    const partyGroupParties = watch('partyGroupParties')
-    const [isLegalTrue, setIsLegalTrue] = useState(typeParty);
-    const [valueType, setValueType] = useState(0);
-    const [isCustomer, setIsCustomer] = useState(isCustomerParty);
-    const [valueSelect, setValueSelect] = useState([])
+  const methods = useFormContext();
+  const { control, formState, setValue, getValue, watch } = methods;
+  const typeParty = watch('type');
+  const isCustomerParty = watch('isCustomer');
+  const partyGroupParties = watch('partyGroupParties');
+  const [isLegalTrue, setIsLegalTrue] = useState(typeParty);
+  const [valueType, setValueType] = useState(0);
+  const [isCustomer, setIsCustomer] = useState(isCustomerParty);
+  const [valueSelect, setValueSelect] = useState([]);
 
-    const [partyGroupOptions, setPartyGroupOptions] = useState([]);
-    const [isLoadingPartyGroupSelect, setIsLoadingPartyGroupSelect] = useState(true);
-    const { partyGroupChildList } = useSelector(({ baseInformation }) => baseInformation.partyGroupSlice)
-    const dispatch = useDispatch();
+  const [partyGroupOptions, setPartyGroupOptions] = useState([]);
+  const [isLoadingPartyGroupSelect, setIsLoadingPartyGroupSelect] = useState(true);
+  const { partyGroupChildList } = useSelector(
+    ({ baseInformation }) => baseInformation.partyGroupSlice
+  );
+  const dispatch = useDispatch();
 
-    useEffect(() => {
-        dispatch(fetchPartyGroupJustChildList())
-            .unwrap()
-            .then((res) => {
-                const arrayList = [];
-                res.forEach(function (element) {
-                    arrayList.push({ value: element.partyGroupId, label: element.title });
-                });
-                setPartyGroupOptions(arrayList);
-                if (partyGroupOptions !== undefined && partyGroupOptions !== null && partyGroupOptions !== {}) {
-                    setIsLoadingPartyGroupSelect(false);
-                }
-
-            });
-
-
-    }, [])
-
-    useEffect(() => {
-        const temprorayArray = [];
-
-        for (let i = 0; i < partyGroupParties.length; i += 1) {
-            partyGroupOptions.forEach((item) => {
-                if (item.value === partyGroupParties[i]) {
-                    temprorayArray.push(item);
-                }
-
-            })
+  useEffect(() => {
+    dispatch(fetchPartyGroupJustChildList())
+      .unwrap()
+      .then((res) => {
+        const arrayList = [];
+        res.forEach(function (element) {
+          arrayList.push({ value: element.partyGroupId, label: element.title });
+        });
+        setPartyGroupOptions(arrayList);
+        if (
+          partyGroupOptions !== undefined &&
+          partyGroupOptions !== null &&
+          partyGroupOptions !== {}
+        ) {
+          setIsLoadingPartyGroupSelect(false);
         }
-        setValueSelect([...temprorayArray]);
-    }, [partyGroupOptions])
+      });
+  }, []);
 
-    // Add Comma To Input Price
-    const addCommas = num => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    const removeNonNumeric = num => num.toString().replace(/[^0-9]/g, "");
+  useEffect(() => {
+    const temprorayArray = [];
 
-    // handle for legal customer 
-    const handleCheckedLegal = (e) => {
-        setValueType(+e.target.value);
-        if (+e.target.value === 1) {
-            setIsLegalTrue(true)
-        } else {
-            setIsLegalTrue(false);
+    for (let i = 0; i < partyGroupParties.length; i += 1) {
+      partyGroupOptions.forEach((item) => {
+        if (item.value === partyGroupParties[i]) {
+          temprorayArray.push(item);
         }
-    };
-
-    const handleChangeCustomerRole = (e) => {
-        if (e.target.checked) {
-            setIsCustomer(true);
-        } else {
-            setIsCustomer(false);
-        }
+      });
     }
+    setValueSelect([...temprorayArray]);
+  }, [partyGroupOptions]);
 
+  // Add Comma To Input Price
+  const addCommas = (num) => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  const removeNonNumeric = (num) => num.toString().replace(/[^0-9]/g, '');
 
-    return (
-        <div>
-            {/* <Container> */}
-            <Grid container className="mb-16 mt-4" sm={12} spacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-                <Grid container item xs={12} justifyContent="left" alignItems="center" spacing={1}>
-                    <Grid item xs={12} >
-                        <Controller
-                            name="type"
-                            defaultValue={0}
-                            control={control}
-                            render={({ field }) => (
-                                <FormControl >
-                                    <FormLabel component="legend">نوع : </FormLabel>
-                                    <RadioGroup
-                                        {...field}
-                                        className="mt-16"
-                                        row
-                                        name="type"
-                                        onChange={(event, value) => {
-                                            handleCheckedLegal(event);
-                                            field.onChange(+value);
-                                        }}
-                                        value={field.value === '' ? 0 : field.value}
+  // handle for legal customer
+  const handleCheckedLegal = (e) => {
+    setValueType(+e.target.value);
+    if (+e.target.value === 1) {
+      setIsLegalTrue(true);
+    } else {
+      setIsLegalTrue(false);
+    }
+  };
 
-                                    >
-                                        <FormControlLabel control={<Radio />} label="حقیقی" value={0} />
-                                        <FormControlLabel control={<Radio />} label="حقوقی" value={1} />
-                                    </RadioGroup>
-                                </FormControl>
-                            )}
+  const handleChangeCustomerRole = (e) => {
+    if (e.target.checked) {
+      setIsCustomer(true);
+    } else {
+      setIsCustomer(false);
+    }
+  };
 
+  return (
+    <div>
+      {/* <Container> */}
+      <Grid
+        container
+        className="mb-16 mt-4"
+        sm={12}
+        spacing={1}
+        columnSpacing={{ xs: 1, sm: 2, md: 3 }}
+      >
+        <Grid container item xs={12} justifyContent="left" alignItems="center" spacing={1}>
+          <Grid item xs={12}>
+            <Controller
+              name="type"
+              defaultValue={0}
+              control={control}
+              render={({ field }) => (
+                <FormControl>
+                  <FormLabel component="legend">نوع : </FormLabel>
+                  <RadioGroup
+                    {...field}
+                    className="mt-16"
+                    row
+                    name="type"
+                    onChange={(event, value) => {
+                      handleCheckedLegal(event);
+                      field.onChange(+value);
+                    }}
+                    value={field.value === '' ? 0 : field.value}
+                  >
+                    <FormControlLabel control={<Radio />} label="حقیقی" value={0} />
+                    <FormControlLabel control={<Radio />} label="حقوقی" value={1} />
+                  </RadioGroup>
+                </FormControl>
+              )}
+            />
+          </Grid>
 
-                        />
+          <Grid item sx={12}>
+            {' '}
+          </Grid>
+          {isLegalTrue && (
+            <Grid item xs={3}>
+              <Controller
+                name="title"
+                defaultValue=""
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    className="mt-8 mb-8"
+                    required
+                    size="small"
+                    autoFocus
+                    id="title"
+                    variant="outlined"
+                    fullWidth
+                    label="عنوان"
+                  />
+                )}
+              />
+            </Grid>
+          )}
 
-                    </Grid>
+          {!isLegalTrue && (
+            <>
+              <Grid item xs={12} sm={3}>
+                <Controller
+                  name="firstName"
+                  defaultValue=""
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      className="mt-8 mb-8"
+                      required
+                      size="small"
+                      autoFocus
+                      id="firstName"
+                      variant="outlined"
+                      fullWidth
+                      label="نام"
+                    />
+                  )}
+                />
+              </Grid>
 
+              <Grid item xs={12} sm={3}>
+                <Controller
+                  name="lastName"
+                  defaultValue=""
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      className="mt-8 mb-8"
+                      required
+                      size="small"
+                      autoFocus
+                      id="lastName"
+                      variant="outlined"
+                      fullWidth
+                      label="نام خانوادگی"
+                    />
+                  )}
+                />
+              </Grid>
+            </>
+          )}
 
+          <Grid item xs={12} sm={3}>
+            <Controller
+              name="codeMelli"
+              defaultValue=""
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  className="mt-8 mb-8"
+                  required
+                  fullWidth
+                  name="codeMelli"
+                  id="code-melli"
+                  type="text"
+                  size="small"
+                  label="کد ملی"
+                  variant="outlined"
+                />
+              )}
+            />
+          </Grid>
 
+          {isLegalTrue && (
+            <Grid item xs={12} sm={3}>
+              <Controller
+                name="economicCode"
+                defaultValue=""
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    className="mt-8 mb-8"
+                    required
+                    fullWidth
+                    name="economicCode"
+                    id="economicCode"
+                    type="text"
+                    size="small"
+                    label="کد اقتصادی"
+                    variant="outlined"
+                  />
+                )}
+              />
+            </Grid>
+          )}
+        </Grid>
 
-
-                    <Grid item sx={12}>{" "}</Grid>
-                    {isLegalTrue && <Grid item xs={3}>
-                        <Controller
-                            name="title"
-                            defaultValue=""
-                            control={control}
-                            render={({ field }) => (
-                                <TextField
-                                    {...field}
-                                    className="mt-8 mb-8"
-                                    required
-                                    size="small"
-                                    autoFocus
-                                    id="title"
-                                    variant="outlined"
-                                    fullWidth
-                                    label="عنوان"
-                                />
-                            )}
-                        />
-
-                    </Grid>}
-
-
-
-                    {!isLegalTrue && <>
-                        <Grid item xs={12} sm={3}>
-                            <Controller
-                                name="firstName"
-                                defaultValue=""
-                                control={control}
-                                render={({ field }) => (
-                                    <TextField
-                                        {...field}
-                                        className="mt-8 mb-8"
-                                        required
-                                        size="small"
-                                        autoFocus
-                                        id="firstName"
-                                        variant="outlined"
-                                        fullWidth
-                                        label="نام"
-                                    />
-                                )}
-                            />
-                        </Grid>
-
-
-                        <Grid item xs={12} sm={3}>
-                            <Controller
-                                name="lastName"
-                                defaultValue=""
-                                control={control}
-                                render={({ field }) => (
-                                    <TextField
-                                        {...field}
-                                        className="mt-8 mb-8"
-                                        required
-                                        size="small"
-                                        autoFocus
-                                        id="lastName"
-                                        variant="outlined"
-                                        fullWidth
-                                        label="نام خانوادگی"
-                                    />
-                                )}
-                            />
-                        </Grid>
-                    </>}
-
-                    <Grid item xs={12} sm={3}>
-                        <Controller
-                            name="codeMelli"
-                            defaultValue=""
-                            control={control}
-                            render={({ field }) => (
-                                <TextField
-                                    {...field}
-                                    className="mt-8 mb-8"
-                                    required
-                                    fullWidth
-                                    name="codeMelli"
-                                    id="code-melli"
-                                    type="text"
-                                    size="small"
-                                    label="کد ملی"
-                                    variant="outlined"
-                                />
-                            )}
-                        />
-                    </Grid>
-
-                    {isLegalTrue &&
-                        <Grid item xs={12} sm={3}>
-                            <Controller
-                                name="economicCode"
-                                defaultValue=""
-                                control={control}
-                                render={({ field }) => (
-                                    <TextField
-                                        {...field}
-                                        className="mt-8 mb-8"
-                                        required
-                                        fullWidth
-                                        name="economicCode"
-                                        id="economicCode"
-                                        type="text"
-                                        size="small"
-                                        label="کد اقتصادی"
-                                        variant="outlined"
-                                    />
-                                )}
-                            />
-
-                        </Grid>
-                    }
-
-
-                </Grid>
-
-                <Grid container item xs={12} justifyContent="left" alignItems="center" spacing={1} style={{marginRight:"7px"}} >
-                    {/* <Grid item sx={12} md={12}>
+        <Grid
+          container
+          item
+          xs={12}
+          justifyContent="left"
+          alignItems="center"
+          spacing={1}
+          style={{ marginRight: '7px' }}
+        >
+          {/* <Grid item sx={12} md={12}>
                         {" "}
                     </Grid> */}
 
-                    {/* 
+          {/* 
 
                     <Grid item sx={12} sm={3}>
                         <Controller
@@ -266,288 +285,295 @@ const BasicInfoTab = () => {
                         />
                     </Grid> */}
 
-                    <Grid item xs={12} sm={3}>
-                        <Controller
-                            name="code"
-                            defaultValue=""
-                            control={control}
-                            render={({ field }) => (
-                                <TextField
-                                    style={{ marginTop: "15px" }}
-                                    {...field}
-                                    className="mt-8 mb-8"
-                                    required
-                                    fullWidth
-                                    name="code"
-                                    id="code"
-                                    type="text"
-                                    size="small"
-                                    label="کد"
-                                    variant="outlined"
-                                />
-                            )}
+          <Grid item xs={12} sm={3}>
+            <Controller
+              name="code"
+              defaultValue=""
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  style={{ marginTop: '15px' }}
+                  {...field}
+                  className="mt-8 mb-8"
+                  required
+                  fullWidth
+                  name="code"
+                  id="code"
+                  type="text"
+                  size="small"
+                  label="کد"
+                  variant="outlined"
+                />
+              )}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={3} style={{ marginLeft: '1px', marginRight: '6px' }}>
+            <Controller
+              name="userName"
+              defaultValue=""
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  style={{ marginTop: '15px' }}
+                  {...field}
+                  className="mt-8 mb-8"
+                  required
+                  fullWidth
+                  type="text"
+                  size="small"
+                  label="نام کاربری"
+                  variant="outlined"
+                />
+              )}
+            />
+          </Grid>
+
+          <Grid item sx={12} sm={isLegalTrue ? 3 : 3} className="mt-16">
+            <Controller
+              name="partyGroupParties"
+              control={control}
+              label="گروه طرف حساب"
+              render={({ field: { onChange, value } }) => (
+                <Select
+                  labelId="demo-simple-select-label"
+                  isMulti
+                  className="react-select mt-8 mb-16"
+                  classNamePrefix="react-select"
+                  fullWidth
+                  value={[...valueSelect]}
+                  onChange={(event) => {
+                    const newValue = [];
+                    event.forEach((item) => {
+                      newValue.push(item.value);
+                    });
+                    setValueSelect([...event]);
+                    onChange([...newValue]);
+                  }}
+                  options={partyGroupOptions}
+                  inline
+                  isLoading={isLoadingPartyGroupSelect}
+                  placeholder="گروه طرف حساب"
+                />
+              )}
+            />
+          </Grid>
+
+          <Grid item xs={12} md={3} className="mt-8">
+            <Controller
+              name="gender"
+              defaultValue=""
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  select
+                  fullWidth
+                  size="small"
+                  variant="outlined"
+                  label="جنسیت"
+                >
+                  <MenuItem key="Male" value={0}>
+                    آقا
+                  </MenuItem>
+                  <MenuItem key="Female" value={1}>
+                    خانم
+                  </MenuItem>
+                </TextField>
+              )}
+            />
+          </Grid>
+
+          {/* <Grid item xs={12}>{" "}</Grid> */}
+          <Grid item xs={12}>
+            {' '}
+          </Grid>
+          <Grid item xs={12} sm={8}>
+            <FormControl fullWidth conmpnent="fieldest" variant="standard">
+              <FormLabel component="legend">نقش : </FormLabel>
+              <FormGroup className="mt-8" row name="role">
+                <FormControlLabel
+                  label="مشتری"
+                  value="isCustomer"
+                  control={
+                    <Controller
+                      control={control}
+                      name="isCustomer"
+                      render={({ field: { onChange, value } }) => (
+                        <Checkbox
+                          checked={value}
+                          onChange={(event, newValue) => {
+                            handleChangeCustomerRole(event);
+                            onChange(newValue);
+                          }}
                         />
-                    </Grid>
-
-
-                    <Grid item xs={12} sm={3}>
-                        <Controller
-                            name="userName"
-                            defaultValue=""
-                            control={control}
-                            render={({ field }) => (
-                                <TextField
-                                    style={{ marginTop: "15px" }}
-                                    {...field}
-                                    className="mt-8 mb-8"
-                                    required
-                                    fullWidth
-                                    type="text"
-                                    size="small"
-                                    label="نام کاربری"
-                                    variant="outlined"
-                                />
-                            )}
+                      )}
+                    />
+                  }
+                />
+                <FormControlLabel
+                  label="فروشنده"
+                  control={
+                    <Controller
+                      control={control}
+                      name="isSeller"
+                      defaultValue={false}
+                      render={({ field: { onChange, value } }) => (
+                        <Checkbox
+                          checked={value}
+                          onChange={(event, newValue) => {
+                            onChange(newValue);
+                          }}
                         />
-                    </Grid>
-
-                    <Grid item sx={12} sm={isLegalTrue ? 3 : 3} className="mt-16"  >
-                        <Controller
-
-                            name="partyGroupParties"
-                            control={control}
-                            
-                            label='گروه طرف حساب'
-                            render={({ field: { onChange, value } }) => (
-                                <Select
-                                    labelId="demo-simple-select-label"
-                                    isMulti
-                                    className="react-select mt-8 mb-16"
-                                    classNamePrefix="react-select"
-                                    fullWidth
-                                    value={[...valueSelect]}
-                                    onChange={(event) => {
-                                        const newValue = [];
-                                        event.forEach((item) => {
-                                            newValue.push(item.value);
-                                        })
-                                        setValueSelect([...event])
-                                        onChange([...newValue]);
-                                    }}
-                                    options={partyGroupOptions}
-                                    inline
-
-                                    isLoading={isLoadingPartyGroupSelect}
-                                    placeholder="گروه طرف حساب"
-                                />
-                            )}
+                      )}
+                    />
+                  }
+                />
+                <FormControlLabel
+                  label="تامین کننده"
+                  value="isVender"
+                  control={
+                    <Controller
+                      control={control}
+                      name="isVender"
+                      defaultValue={false}
+                      render={({ field: { onChange, value } }) => (
+                        <Checkbox
+                          checked={value}
+                          onChange={(event, newValue) => {
+                            onChange(newValue);
+                          }}
                         />
-                    </Grid>
-                    {/* <Grid item xs={12}>{" "}</Grid> */}
-                    <Grid item xs={12}>{" "}</Grid>
-                    <Grid item xs={12} sm={8}>
-                        <FormControl fullWidth conmpnent="fieldest" variant="standard">
-                            <FormLabel component="legend">نقش : </FormLabel>
-                            <FormGroup
-                                className="mt-8"
-                                row
-                                name="role"
+                      )}
+                    />
+                  }
+                />
+              </FormGroup>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12}>
+            {' '}
+          </Grid>
 
-                            >
-                                <FormControlLabel
-                                    label="مشتری"
-                                    value="isCustomer"
-                                    control={
-                                        <Controller
-                                            control={control}
-                                            name="isCustomer"
-                                            render={({ field: { onChange, value } }) => (
+          {isCustomer && (
+            <>
+              <Grid item xs={12} sm={4}>
+                <FormControl fullWidth conmpnent="fieldest" variant="outlined">
+                  <FormLabel component="legend">اعتبار مشتری</FormLabel>
+                  <FormGroup className="mt-8 mb-8" row name="CreditCheckingType">
+                    <FormControlLabel
+                      label="مشتری دارای اعتبار است"
+                      value={0}
+                      control={
+                        <Controller
+                          control={control}
+                          name="hasCredit"
+                          defaultValue={false}
+                          render={({ field: { onChange, value } }) => (
+                            <Checkbox
+                              checked={value}
+                              onChange={(event, newValue) => {
+                                onChange(newValue);
+                              }}
+                            />
+                          )}
+                        />
+                      }
+                    />
+                  </FormGroup>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Controller
+                  name="customerCredit"
+                  defaultValue=""
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      className="mt-8 mb-8"
+                      required
+                      name="creditCustomer"
+                      id="creditCustomer"
+                      type="text"
+                      size="small"
+                      label="اعتبار مشتری"
+                      variant="standard"
+                      onChange={(event) => {
+                        const newValue = addCommas(removeNonNumeric(event.target.value));
+                        field.onChange(newValue);
+                      }}
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                {' '}
+              </Grid>
+              <Grid item xs={12} sm={8}>
+                <Controller
+                  name="creditCheckingType"
+                  defaultValue={0}
+                  control={control}
+                  render={({ field }) => (
+                    <FormControl fullWidth>
+                      <RadioGroup
+                        className="mt-16"
+                        row
+                        onChange={(event, value) => {
+                          field.onChange(+value);
+                        }}
+                        value={field.value === '' ? 0 : field.value}
+                      >
+                        <FormControlLabel
+                          control={<Radio />}
+                          label="هشدار در صورت ثبت فاکتور"
+                          value={0}
+                        />
+                        <FormControlLabel control={<Radio />} label="عدم ثبت فاکتور" value={1} />
+                      </RadioGroup>
+                    </FormControl>
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                {' '}
+              </Grid>
+              <Grid item xs={12} sm={8}>
+                <FormControl fullWidth conmpnent="fieldest" variant="standard">
+                  <FormGroup className="mt-8" row name="role">
+                    <FormControlLabel
+                      label="دریافت چک از مشتری بلامانع است"
+                      // value={1}
+                      control={
+                        <Controller
+                          control={control}
+                          name="acceptCustomerCheque"
+                          defaultValue={false}
+                          render={({ field: { onChange, value } }) => (
+                            <Checkbox
+                              checked={value}
+                              onChange={(event, newValue) => {
+                                onChange(newValue);
+                              }}
+                            />
+                          )}
+                        />
+                      }
+                    />
+                  </FormGroup>
+                </FormControl>
+              </Grid>
+            </>
+          )}
+        </Grid>
+      </Grid>
 
-                                                <Checkbox
-                                                    checked={value}
-                                                    onChange={(event, newValue) => {
-                                                        handleChangeCustomerRole(event);
-                                                        onChange(newValue);
-                                                    }}
-                                                />
-                                            )}
-                                        />
-                                    }
-                                />
-                                <FormControlLabel
-                                    label="فروشنده"
-                                    control={
-                                        <Controller
-                                            control={control}
-                                            name="isSeller"
-                                            defaultValue={false}
-                                            render={({ field: { onChange, value } }) => (
-
-                                                <Checkbox
-                                                    checked={value}
-                                                    onChange={(event, newValue) => {
-                                                        onChange(newValue);
-                                                    }}
-                                                />
-
-                                            )}
-                                        />
-                                    }
-                                />
-                                <FormControlLabel
-                                    label="تامین کننده" value="isVender"
-                                    control={
-                                        <Controller
-                                            control={control}
-                                            name="isVender"
-                                            defaultValue={false}
-                                            render={({ field: { onChange, value } }) => (
-
-                                                <Checkbox
-                                                    checked={value}
-                                                    onChange={(event, newValue) => {
-                                                        onChange(newValue);
-                                                    }}
-                                                />
-                                            )}
-                                        />
-                                    }
-                                />
-
-                            </FormGroup>
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={12}>{" "}</Grid>
-
-                    {isCustomer &&
-                        <>
-                            <Grid item xs={12} sm={4} >
-                                <FormControl fullWidth conmpnent="fieldest" variant="outlined">
-                                    <FormLabel component="legend">اعتبار مشتری</FormLabel>
-                                    <FormGroup
-                                        className="mt-8 mb-8"
-                                        row
-                                        name="CreditCheckingType"
-                                    >
-                                        <FormControlLabel
-                                            label="مشتری دارای اعتبار است"
-                                            value={0}
-                                            control={
-                                                <Controller
-                                                    control={control}
-                                                    name="hasCredit"
-                                                    defaultValue={false}
-                                                    render={({ field: { onChange, value } }) => (
-
-                                                        <Checkbox
-                                                            checked={value}
-                                                            onChange={(event, newValue) => {
-                                                                onChange(newValue);
-                                                            }}
-                                                        />
-                                                    )}
-                                                />
-                                            }
-                                        />
-                                    </FormGroup>
-                                </FormControl>
-                            </Grid>
-                            <Grid item xs={12} sm={4}>
-                                <Controller
-                                    name="customerCredit"
-                                    defaultValue=""
-                                    control={control}
-                                    render={({ field }) => (
-                                        <TextField
-                                            {...field}
-                                            className="mt-8 mb-8"
-                                            required
-                                            name="creditCustomer"
-                                            id="creditCustomer"
-                                            type="text"
-                                            size="small"
-                                            label="اعتبار مشتری"
-                                            variant="standard"
-                                            onChange={(event) => {
-                                                const newValue = addCommas(removeNonNumeric(event.target.value))
-                                                field.onChange(newValue);
-                                            }}
-                                        />
-                                    )}
-                                />
-                            </Grid>
-                            <Grid item xs={12}>{" "}</Grid>
-                            <Grid item xs={12} sm={8} >
-                                <Controller
-                                    name="creditCheckingType"
-                                    defaultValue={0}
-                                    control={control}
-                                    render={({ field }) => (
-                                        <FormControl fullWidth>
-                                            <RadioGroup
-                                                className="mt-16"
-                                                row
-                                                onChange={(event, value) => {
-                                                    field.onChange(+value);
-                                                }}
-                                                value={field.value === '' ? 0 : field.value}
-
-                                            >
-                                                <FormControlLabel control={<Radio />} label="هشدار در صورت ثبت فاکتور" value={0} />
-                                                <FormControlLabel control={<Radio />} label="عدم ثبت فاکتور" value={1} />
-                                            </RadioGroup>
-                                        </FormControl>
-                                    )}
-                                />
-                            </Grid>
-                            <Grid item xs={12}>{" "}</Grid>
-                            <Grid item xs={12} sm={8}>
-                                <FormControl fullWidth conmpnent="fieldest" variant="standard">
-                                    <FormGroup
-                                        className="mt-8"
-                                        row
-                                        name="role"
-                                    >
-                                        <FormControlLabel
-                                            label="دریافت چک از مشتری بلامانع است"
-                                            // value={1} 
-                                            control={
-                                                <Controller
-                                                    control={control}
-                                                    name="acceptCustomerCheque"
-                                                    defaultValue={false}
-                                                    render={({ field: { onChange, value } }) => (
-                                                        <Checkbox
-                                                            checked={value}
-                                                            onChange={(event, newValue) => {
-                                                                onChange(newValue);
-                                                            }}
-                                                        />
-                                                    )}
-                                                />
-                                            }
-                                        />
-                                    </FormGroup>
-                                </FormControl>
-
-                            </Grid>
-                        </>}
-                </Grid>
-
-
-            </Grid>
-
-
-
-
-
-
-            {/* <Grid container item sm={12} justifyContent="center" alignItems="center" spacing={1}>
+      {/* <Grid container item sm={12} justifyContent="center" alignItems="center" spacing={1}>
                           
                         </Grid> */}
 
-
-            {/* 
+      {/* 
 
             <Grid container item row sm={12} md={6} justifyContent="center" alignItems="center" spacing={1}>
               
@@ -555,10 +581,8 @@ const BasicInfoTab = () => {
 
 
             </Grid> */}
-
-        </div>
-    )
-}
-
+    </div>
+  );
+};
 
 export default BasicInfoTab;

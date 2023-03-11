@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { Modal, Button, Text } from "@nextui-org/react";
 import Select from "react-select";
 import FuseUtils from "@fuse/utils/FuseUtils";
 import '../../../../../../../styles/MyStyles.css'
-import { Grid, InputLabel, MenuItem, TextField, Box } from "@mui/material";
-import DatePicker from 'react-multi-date-picker';
-import persian from 'react-date-object/calendars/persian';
-import persianFa from 'react-date-object/locales/persian_fa';
-import { addToPaymentMethodsItems, findPaymentMethodData, updatePaymentMethodsItems } from "../../../store/paymentMethodsSlice";
+import { Box, Grid, InputLabel, TextField } from "@mui/material";
+import {
+    addToPaymentMethodsItems,
+    findPaymentMethodData,
+    updatePaymentMethodsItems
+} from "../../../store/paymentMethodsSlice";
 import { handleModals } from "../../../store/handleModalsSlice";
 
 const styleSaveBtn = {
@@ -27,44 +28,45 @@ const styleCancelBtn = {
     width: '15%',
     padding: '5px',
 }
-const styleDiv = {
-    'text-align': 'right',
-};
 
 const styleDatePicker = {
     'text-align': 'right',
     padding: '4px 12px',
     'background-color': 'white',
     height: '36px',
-    width: '100%',
+    width: '120%',
+};
+
+const styleDiv = {
+    'text-align': 'right',
 };
 
 const defaultValue = {
-    type: '',
+    account: '',
+    operational: '',
+    part: '',
     price: '',
-    date: '',
     description: '',
-
 }
 
-export default function CreditMethod({ paymentMethodData, operationOptions, addCommas, removeNonNumeric, convertPriceToNumber }) {
+export default function PayOrReceiveAsDiscount({ paymentMethodData, operationOptions, addCommas, convertPriceToNumber, removeNonNumeric }) {
 
+    const { handleMethodDiscount } = useSelector(({ buyAndSell }) => buyAndSell.handleModalsSlice)
     const dispatch = useDispatch();
-    const { handleCreditModal } = useSelector(({ buyAndSell }) => buyAndSell.handleModalsSlice);
-    const closeHandler = () => dispatch(handleModals({ type: 'credit', isOpen: false }));
+    const closeHandler = () => dispatch(handleModals({ type: 'discount', isOpen: false }))
 
     const schema = yup.object().shape({
         type: yup.number().required('لطفا نوع پرداخت را مشخص کنید!'),
         price: yup.number().required('لطفا مبلغ را وارد کنید!'),
     })
+
     const {
         register,
-        handleSubmit,
-        control,
+        reset,
         setValue,
         getValues,
-        reset,
         watch,
+        handleSubmit,
         formState: { errors },
     } = useForm({
         resolver: yupResolver(schema),
@@ -73,31 +75,31 @@ export default function CreditMethod({ paymentMethodData, operationOptions, addC
     const price = watch('price');
     const type = watch('type');
 
-    useEffect(() => {
-        if (paymentMethodData?.id !== undefined) reset(paymentMethodData)
-    }, [])
-
-    const handleClick = async (data) => {
-        const formData = getValues();
-
+    const handleClick = (data) => {
+        // const formData = getValues();
         if (paymentMethodData?.id !== undefined) {
             dispatch(updatePaymentMethodsItems({
                 ...paymentMethodData,
                 ...data,
+                // ...formData,
             }))
         } else {
             dispatch(addToPaymentMethodsItems({
                 id: FuseUtils.generateGUID(),
-                paymentMethod: 'credit',
-                paymentMethodPer: 'اعتباری',
+                paymentMethod: 'discount',
+                paymentMethodPer: 'تخفیف',
                 ...data
+                // ...formData
             }
             ));
         }
         reset(defaultValue);
         dispatch(findPaymentMethodData({}));
-
     }
+
+    useEffect(() => {
+        if (paymentMethodData?.id !== undefined) reset(paymentMethodData);
+    }, [])
 
     return (
         <Modal
@@ -105,19 +107,35 @@ export default function CreditMethod({ paymentMethodData, operationOptions, addC
             aria-labelledby="modal-title"
             width="40%"
             height="40%"
-            open={handleCreditModal}
+            open={handleMethodDiscount}
             onClose={closeHandler}
         >
             <Modal.Header className="modal-header-style">
                 <Text id="modal-title" size={18}>
-                    اعتباری
+                    پرداخت / دریافت به صورت تخفیف
                 </Text>
             </Modal.Header>
             <Modal.Body>
-                <Box>
+                <Box container component="form" >
                     <Grid style={styleDiv} container justifyContent="center" marginX="10px" row>
-
-                        <Grid item xs={12} sm={9} style={{ zIndex: '100' }} className="mx-24 mt-16 mb-5">
+                        <Grid item xs={12} sm={9} className="mx-24 mt-16 mb-5">
+                            <InputLabel>حساب: </InputLabel>
+                            <Select
+                                isRtl
+                                className="basic-single"
+                                classNamePrefix="select"
+                                isSearchable
+                                name="userId"
+                                style={{ direction: 'rtl' }}
+                                // options={options}
+                                // value={options?.find((item) => item.value === partyId)}
+                                // value={{ value: partyId, label: partyRealName }}
+                                onChange={(event) => {
+                                    setValue('account', event.label);
+                                }}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={9} className="mx-24 mt-16 mb-5">
                             <InputLabel>:عملیات</InputLabel>
                             <Select
                                 isRtl
@@ -133,9 +151,11 @@ export default function CreditMethod({ paymentMethodData, operationOptions, addC
                                 }}
                             />
                             {errors?.type && <span className="text-danger">{errors?.type?.message}</span>}
+
                         </Grid>
+
                         <Grid item xs={12} sm={9} className="mx-24 my-5">
-                            <InputLabel>مبلغ</InputLabel>
+                            <InputLabel>:مبلغ</InputLabel>
                             <TextField
                                 required
                                 fullWidth
@@ -143,29 +163,28 @@ export default function CreditMethod({ paymentMethodData, operationOptions, addC
                                 error={!!errors?.price}
                                 helperText={errors?.price?.message}
                                 value={addCommas(removeNonNumeric(price))}
-                                onChange={(event) => {
-                                    setValue('price', convertPriceToNumber(event.target.value));
-                                }}
+                                onChange={(event) => setValue('price', convertPriceToNumber(event.target.value))}
                             />
                         </Grid>
-                        <Grid item xs={12} sm={9} className="my-5">
-                            <InputLabel>:سررسید</InputLabel>
-                            <DatePicker
-                                id="date"
-                                style={styleDatePicker}
-                                calendar={persian}
-                                locale={persianFa}
-                                placeholder="تاریخ YYYY/MM/DD"
-                                calendarPosition="bottom-right"
-                                onChange={(date) => {
-                                    const d = new Date(date).toLocaleDateString('fa-IR');
-                                    setValue('date', d);
-
+                        <Grid item xs={12} sm={9} className="mx-24 mt-16 mb-5">
+                            <InputLabel>:بخش</InputLabel>
+                            <Select
+                                isRtl
+                                className="basic-single"
+                                classNamePrefix="select"
+                                isSearchable
+                                name="part"
+                                style={{ direction: 'rtl' }}
+                                // options={options}
+                                // value={options?.find((item) => item.value === partyId)}
+                                // value={{ value: partyId, label: partyRealName }}
+                                onChange={(event) => {
+                                    setValue('part', event.label);
                                 }}
                             />
                         </Grid>
                         <Grid item xs={12} sm={9} className="mx-24 my-5">
-                            <InputLabel>توضیحات</InputLabel>
+                            <InputLabel>:توضیحات</InputLabel>
                             <TextField
                                 type="text"
                                 multiline
@@ -184,7 +203,7 @@ export default function CreditMethod({ paymentMethodData, operationOptions, addC
             <Modal.Footer>
                 <Button
                     color="error"
-                    size={14}
+                    size={16}
                     onPress={() => {
                         dispatch(findPaymentMethodData({}));
                         closeHandler();
@@ -193,7 +212,7 @@ export default function CreditMethod({ paymentMethodData, operationOptions, addC
                 >
                     کنسل
                 </Button>
-                <Button onPress={handleSubmit(handleClick)} size={14} css={styleSaveBtn}>
+                <Button size={16} onPress={handleSubmit(handleClick)} css={styleSaveBtn}>
                     ثبت
                 </Button>
             </Modal.Footer>

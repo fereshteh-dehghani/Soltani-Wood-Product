@@ -40,7 +40,7 @@ const ChangeAddress = ({ userId, modalOpen, closeHandler }) => {
   const [responseApi, setResponseApi] = useState({});
   const [modalTitle, setModalTitle] = useState('addAddress');
   // const [loading, setLoading] = useState(true);
-  const gridStyleR = useMemo(() => ({ height: 400 }), []);
+  const gridStyleR = useMemo(() => ({ height: 350 }), []);
 
   const onDeleteUserAddress = (id) => {
     try {
@@ -433,6 +433,7 @@ const ChangeAddress = ({ userId, modalOpen, closeHandler }) => {
     <div>
 
       <Modal
+        style={{paddingTop:"0px"}}
         closeButton
         preventClose
         width="60%"
@@ -440,7 +441,7 @@ const ChangeAddress = ({ userId, modalOpen, closeHandler }) => {
         open={modalOpen}
         onClose={closeHandler}
       >
-        <Modal.Header>
+        <Modal.Header className='Modal-Header' >
           <Text size={20}>اطلاعات آدرس کاربر</Text>
         </Modal.Header>
         <Modal.Body>

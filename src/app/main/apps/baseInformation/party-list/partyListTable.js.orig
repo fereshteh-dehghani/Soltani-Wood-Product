@@ -1,43 +1,55 @@
 /* eslint-disable prettier/prettier */
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import FuseScrollbars from '@fuse/core/FuseScrollbars';
 import FuseLoading from '@fuse/core/FuseLoading';
 import { AgGridReact } from 'ag-grid-react';
+<<<<<<< HEAD
+=======
 // import basicinfo
 
 import { useDispatch, useSelector } from 'react-redux';
 import {
+  FormControl,
+  FormControlLabel,
+  FormLabel,
   Grid,
+  Radio,
+  RadioGroup,
+  TextField,
+  FormGroup,
+  Checkbox,
+  Container,
+  MenuItem,
 } from '@mui/material';
-import 'ag-grid-enterprise';
+
 import {
   BorderColorOutlined,
-  Close,
   CloseOutlined,
   DeleteForeverOutlined,
   DoneAllOutlined,
   EditOutlined,
-  FileDownloadOutlined,
-  Print,
 } from '@mui/icons-material';
 import AutoFixHighOutlinedIcon from '@mui/icons-material/AutoFixHighOutlined';
+>>>>>>> 82f2ca86fa050c0c7f55ecb0b2ba2655cc1021f6
 import { showMessage } from 'app/store/fuse/messageSlice';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
 import withRouter from '@fuse/core/withRouter';
 import axios from 'axios';
+import { Dropdown, Menu, Select } from 'antd';
 import { Button, Modal, Text, Spacer } from '@nextui-org/react';
 import { motion } from 'framer-motion';
-import '../../../../../styles/MyStyles.css';
-
-import { useTheme } from 'styled-components';
-import { navbarToggle, navbarToggleMobile } from 'app/store/fuse/navbarSlice';
-import { setDefaultSettings } from 'app/store/fuse/settingsSlice';
-import _ from 'lodash';
-import { fetchPartyGroupJustChildList } from '../store/partyGroupSlice';
+<<<<<<< HEAD
 import {deleteParty, fetchPartyList } from '../store/partyListSlice';
+import RightClickParty from '../../right-click/RightClickParty';
+=======
+import '../../../../../styles/MyStyles.css';
+import { Controller } from 'react-hook-form';
+import { fetchPartyGroupJustChildList } from '../store/partyGroupSlice';
 
+import { deleteParty, fetchPartyList } from '../store/partyListSlice';
+>>>>>>> 82f2ca86fa050c0c7f55ecb0b2ba2655cc1021f6
 
 function PartyListTable() {
   const dispatch = useDispatch();
@@ -47,14 +59,21 @@ function PartyListTable() {
   );
   const gridRef = useRef();
   const [modalDelete, setModalDelete] = useState(false);
-  const [modalMultiEdit, setModalMultiEdit] = useState(false);
   const [partyId, setPartyId] = useState();
+<<<<<<< HEAD
+  const {
+    response,
+    loading,
+  } = useSelector(({ baseInformation }) => baseInformation.partyListSlice);
+  const rowData =useSelector(({ baseInformation }) => baseInformation.partyListSlice.data);
+
+=======
   const [partyGroupOptions, setPartyGroupOptions] = useState([]);
-  const [checkedPartyItems, setCheckedPartyItems] = useState([]);
   const { response, loading } = useSelector(
     ({ baseInformation }) => baseInformation.partyListSlice
   );
   const rowData = useSelector(({ baseInformation }) => baseInformation.partyListSlice.data);
+>>>>>>> 82f2ca86fa050c0c7f55ecb0b2ba2655cc1021f6
 
   const handleDeleteproduct = () => {
     setModalDelete(!modalDelete);
@@ -113,10 +132,11 @@ function PartyListTable() {
             setModalDelete(true);
           }}
         >
-          <Text size={12}> حذف</Text>
+        <Text size={12}> حذف</Text> 
         </Button>
       </div>
     );
+
 
     return tagItem;
   }
@@ -140,29 +160,9 @@ function PartyListTable() {
     return tagItem;
   }
 
-  // ---------------------------------------
-
-
-  const theme = useTheme();
-  // const mdDown = useMediaQuery(theme.breakpoints.down('lg'));
-  const settings = useSelector(({ fuse }) => fuse.settings.current);
-  const { config } = settings.layout;
-  useEffect(() => {
-    dispatch(navbarToggleMobile());
-    if (config.navbar.style === 'style-2') {
-      dispatch(
-        setDefaultSettings(
-          _.set({}, 'layout.config.navbar.folded', !settings.layout.config.navbar.folded)
-        )
-      );
-    } else {
-      dispatch(navbarToggle());
-    }
-  }, []);
-
-
-
-
+<<<<<<< HEAD
+  
+=======
     // edit modal content---------------
     const [isCustomer , setIsCustomer] = useState(false)
 
@@ -182,28 +182,76 @@ function PartyListTable() {
       });
   }, []);
 
+  // contextmenu part (Party)--------------------
+
+  function handlePartyContextMenu(key) {
+    setPartyId(localStorage.getItem('partyId'));
+    if (key === 'delete') {
+      setModalDelete(true);
+    } else if (key === 'editDoubleClick') {
+      navigate(`/apps/baseInformation/party/${localStorage.getItem('partyId')}/party-detailes`);
+    } else if (key === 'edit') {
+      window.open(`/apps/baseInformation/party/${localStorage.getItem('partyId')}/party-detailes`);
+    }
+  }
+
+  // Context menu items---------
+
+  const ContextMenu = (
+    <Menu
+      onClick={({ key }) => {
+        handlePartyContextMenu(key);
+      }}
+      items={[
+        {
+          label: 'ویرایش در همین صفحه (دبل کلیک)',
+          key: 'editDoubleClick',
+          icon: <EditOutlined />,
+        },
+        {
+          label: 'ویرایش در صفحه دیگر',
+          key: 'edit',
+          icon: <BorderColorOutlined />,
+        },
+        {
+          label: 'حذف',
+          key: 'delete',
+          danger: true,
+          icon: <DeleteForeverOutlined />,
+        },
+      ]}
+    />
+  );
 
   //----------------------------
 
   // handle multiple checked checkboxes----------------
+  const [checkedPartyItems, setCheckedPartyItems] = useState([]);
   const [partyItemMultiEdit, setPartyItemMultiEdit] = useState([]);
 
-  function handleCheckPartyList(ev , e) {
+  function handleCheckPartyList(ev) {
     const { value, checked } = ev.target;
-    const item = `${e.data.firstName} ${e.data.lastName} `
 
     if (checked) {
       setCheckedPartyItems((prev) => [...prev, value]);
-      setPartyItemMultiEdit((pre)=> [...pre, item])
     } else {
       setCheckedPartyItems((prev) => {
         return [...prev.filter((c) => c !== value)];
       });
-      setPartyItemMultiEdit((pre)=>{
-        return [...pre.filter((d) => d !== item)]
-      })
     }
   }
+
+  const [tempraryArr,setTempraryArr] = useState([])
+  const handleMultiEditAndDelete = (item) => {
+    const tempItem = item.data.partyId
+    setTempraryArr((pre)=>[...pre , item.data.partyId])
+    if(tempraryArr.includes(tempItem)){
+      console.log("mojoode,pas ezaf nemikonsm")
+    }else{
+      setPartyItemMultiEdit((pre) => [...pre, `${item.data.firstName}  ${item.data.lastName} `]);
+    }
+    // setPartyItemMultiEdit((pre) => [...pre, `${item.data.firstName}  ${item.data.lastName} `]);
+  };
 
   // this function shows checkboxes in the table --------------------
   function CheckPartyItem(e) {
@@ -213,9 +261,11 @@ function PartyListTable() {
           id="rowCheckboxes"
           type="checkbox"
           onChange={(ev) => {
-            handleCheckPartyList(ev , e);
+            handleCheckPartyList(ev);
+            handleMultiEditAndDelete(e)
           }}
-          // value={e.data.partyId}
+          value={e.data.partyId}
+          // onClick={() => handleMultiEditAndDelete(e)}
         />
       </div>
     );
@@ -223,77 +273,22 @@ function PartyListTable() {
     return tagItem;
   }
 
-    // Pinned Row---------------------------------
-    const createData = (count) => {
-      const result = [];
-      for (let i = 0; i < count; i+=1) {
-        result.push({
-          codeMelli: ` Athlete ${ i}`,
-        });
-      }
-      return result;
-    };
+  // Select/unselect all the checkboxes-----------
 
-
-    const getRowStyle = useCallback((params) => {
-        return { 'font-weight': 'bold' };
-      
-    }, []);
-
-    const pinnedBottomRowData = useMemo(() => {
-      return createData(1);
-    }, []);
-
-    // const onPinnedRowBottomCount = useCallback(() => {
-    //   const footerRowsToFloat = document.getElementById('bottom-row-count').value;
-    //   const count = Number(footerRowsToFloat);
-    //   const rows = createData(count, 'Bottom');
-    //   gridRef.current.api.setPinnedBottomRowData(rows);
-    // }, []);
-  
-    // -------------------------------------------------
-
-  // Download an Excel file of current table--------
-  const onBtExport = useCallback(() => {
-    gridRef.current.api.exportDataAsExcel();
-  }, []);
-
-
-  // print table------------------------
-  
-  const PrintMe = () =>{      
-    const printContents = document.getElementById('myGrid').innerHTML;
-    const originalContents = document.body.innerHTML;
-    document.body.innerHTML = printContents;
-    window.print();
-   document.body.innerHTML = originalContents; 
-  }
-
-  const onBtPrint = useCallback(() => {
-    const apix = gridRef.current.api;
-    setPrinterFriendly(apix);
-    setTimeout(() => {
-      PrintMe(apix)
-      setNormal(apix);
-    }, 2000);
-  }, []);
-
-
-
-const setPrinterFriendly = (api) => {
-  const eGridDiv = document.querySelector('#myGrid');
-  eGridDiv.style.width = '';
-  eGridDiv.style.height = '';
-  api.setDomLayout('print');
-};
-
-const setNormal = (api) => {
-  const eGridDiv = document.querySelector('#myGrid');
-  eGridDiv.style.width = '1070px';
-  eGridDiv.style.height = '500px';
-  api.setDomLayout();
-};
-
+  // const checkboxes = document.querySelector("#rowCheckboxes");
+  // function selectAll(myCheckbox) {
+  //   console.log(checkboxes);
+  //   console.log(myCheckbox.target.checked);
+  //   if (myCheckbox.target.checked === true) {
+  //     checkboxes.forEach((box) => {
+  //       box.checked = true;
+  //     });
+  //   } else {
+  //     checkboxes.forEach((box) => {
+  //       box.checked = false;
+  //     });
+  //   }
+  // }
 
   // ----------------------------------------
 
@@ -325,12 +320,12 @@ const setNormal = (api) => {
   // }, [showContext]);
   // ------------------------------------------------------
 
+>>>>>>> 82f2ca86fa050c0c7f55ecb0b2ba2655cc1021f6
   const defaultColDef = useMemo(() => ({
     sortable: true,
     filter: true,
     editable: false,
     animateRows: true,
-    resizable: true,
   }));
 
   const gridOptions = {
@@ -341,185 +336,16 @@ const setNormal = (api) => {
       editable: true,
       sortable: true,
       flex: 1,
-      minWidth: 10,
+      minWidth: 100,
       filter: true,
       resizable: true,
       cellStyle: { border: 'solid 0.1px gray' },
     },
   };
 
-  // Ag Grid Select/Unselect Columns---------------
-
-  const sideBar = useMemo(() => {
-    return {
-      toolPanels: [
-        {
-          id: 'columns',
-          labelDefault: 'انتخاب ستون',
-          labelKey: 'columns',
-          iconKey: 'columns',
-          toolPanel: 'agColumnsToolPanel',
-          toolPanelParams: {
-            suppressRowGroups: true,
-            suppressValues: true,
-            suppressPivots: true,
-            suppressPivotMode: true,
-            suppressColumnFilter: true,
-            suppressColumnSelectAll: true,
-            suppressColumnExpandAll: true,
-          },
-        },
-      ],
-      defaultToolPanel: 'columns',
-    };
-  }, []);
-
-  // Ag Grid onContext Menu***********************
-
-  const getContextMenuItems = useCallback(() => {
-    const result = [
-      {
-      name:"ویرایش",
-      subMenu:  [ 
-        {
-          name: 'ویرایش در همین صفحه (دبل کلیک)',
-          action: ()=>{
-            navigate(`/apps/baseInformation/party/${localStorage.getItem('partyId')}/party-detailes`);
-          },
-          icon: <EditOutlined />,
-        },
-        {
-          name: 'ویرایش در صفحه دیگر',
-          action: ()=>{
-            window.open(`/apps/baseInformation/party/${localStorage.getItem('partyId')}/party-detailes`);
-          },
-          icon: <EditOutlined />,
-        },
-      ],
-    },
-      {
-        name: ' حذف  ',
-        action: ()=>{
-          setModalDelete(true);
-        },
-        icon: <EditOutlined />,
-        
-      },
-      // {
-      //   // custom item
-      //   name: 'Alert ',
-      //   action: () => {
-      //     window.alert('Alerting about ');
-      //   },
-      //   cssClasses: ['redFont', 'bold'],
-      // },
-      // {
-      //   // custom item
-      //   name: 'Always Disabled',
-      //   disabled: true,
-      //   tooltip:
-      //     'Very long tooltip, did I mention that I am very long, well I am! Long!  Very Long!',
-      // },
-      {
-        name: 'Country',
-        subMenu: [
-          {
-            name: 'Ireland',
-            action: () => {
-              console.log('Ireland was pressed');
-            },
-          },
-          {
-            name: 'UK',
-            action: () => {
-              console.log('UK was pressed');
-            },
-          },
-          {
-            name: 'France',
-            action: () => {
-              console.log('France was pressed');
-            },
-          },
-        ],
-      },
-      {
-        name: 'Person',
-        subMenu: [
-          {
-            name: 'Niall',
-            action: () => {
-              console.log('Niall was pressed');
-            },
-          },
-          {
-            name: 'Sean',
-            action: () => {
-              console.log('Sean was pressed');
-            },
-          },
-        ],
-      },
-      'separator',
-      {
-        // custom item
-        name: 'Windows',
-        shortcut: 'Alt + W',
-        action: () => {
-          console.log('Windows Item Selected');
-        },
-        icon:
-          '<img src="https://www.ag-grid.com/example-assets/skills/windows.png" />',
-      },
-      {
-        // custom item
-        name: 'Mac',
-        shortcut: 'Alt + M',
-        action: () => {
-          console.log('Mac Item Selected');
-        },
-        icon:
-          '<img src="https://www.ag-grid.com/example-assets/skills/mac.png"/>',
-      },
-      'separator',
-      {
-        // custom item
-        name: 'Checked',
-        checked: true,
-        action: () => {
-          console.log('Checked Selected');
-        },
-        icon:
-          '<img src="https://www.ag-grid.com/example-assets/skills/mac.png"/>',
-      },
-      'separator',
-      'chartRange',
-    ];
-    return result;
-  }, []);
-
-
-  // ********************************************* 
-
-  const autoGroupColumnDef = useMemo(() => {
-    return {
-      Width: 600,
-      cellRendererParams: {
-        footerValueGetter: (params) => {
-          const isRootLevel = params.node.level === -1;
-          if(isRootLevel){
-            return 'ppppppp';
-          }
-          return 'ppppppp';
-        },
-      },
-    };
-  }, []);
-
-
-
   const [columnDefs] = useState([
-    
+<<<<<<< HEAD
+=======
     // field: 'Check'
     {
       field: 'checkRow',
@@ -527,7 +353,6 @@ const setNormal = (api) => {
       width: 120,
       cellRenderer: CheckPartyItem,
     },
-
     // field: 'number'
     {
       field: 'numberOfRow',
@@ -535,8 +360,8 @@ const setNormal = (api) => {
       width: 110,
       // cellRenderer: rowNumberOfPartyItem,
       valueGetter: 'node.rowIndex + 1',
-      
     },
+>>>>>>> 82f2ca86fa050c0c7f55ecb0b2ba2655cc1021f6
     // field: 'title'
     {
       field: 'typePersion',
@@ -557,7 +382,6 @@ const setNormal = (api) => {
       field: 'codeMelli',
       headerName: 'کد ملی',
       minWidth: 50,
-      aggFunc:'avg'
     },
     {
       field: 'email',
@@ -570,10 +394,10 @@ const setNormal = (api) => {
       minWidth: 50,
     },
     {
-      field: 'genderPersion',
-      headerName: 'جنسیت',
-      // minWidth: 50,
-    },
+        field: 'genderPersion',
+        headerName: 'جنسیت',
+        // minWidth: 50,
+      },
     {
       field: 'partyId',
       headerName: 'ویرایش',
@@ -583,29 +407,49 @@ const setNormal = (api) => {
     {
       field: 'partyId',
       headerName: 'حذف',
-      cellRenderer: deletePartyItem,
+      cellRenderer:deletePartyItem,
       minWidth: 50,
     },
   ]);
 
 
-
   const onGridReady = useEffect(() => {
     dispatch(fetchPartyList());
-    console.log('rowData listproduct ', rowData);
+    console.log("rowData listproduct ", rowData);
   }, [response]);
+
 
   if (loading) {
     return <FuseLoading />;
   }
 
+<<<<<<< HEAD
+  function handlePartyId(e){
+    localStorage.setItem("partyId" , e.data.partyId)
+  }
+=======
 
-
-
+>>>>>>> 82f2ca86fa050c0c7f55ecb0b2ba2655cc1021f6
 
   return (
     <>
       <div className="w-full flex flex-col" style={{ justifyContent: 'center' }}>
+<<<<<<< HEAD
+        <FuseScrollbars className="grow overflow-x-auto">
+          <RightClickParty/>
+          <div style={gridStyle} className="ag-theme-alpine">
+            <AgGridReact
+              ref={gridRef}
+              rowData={rowData}
+              columnDefs={columnDefs}
+              defaultColDef={defaultColDef}
+              gridOptions={gridOptions}
+              rowSelection="single"
+              onGridReady={onGridReady}
+              onCellContextMenu={(e)=> handlePartyId(e)}
+            />
+          </div>
+=======
         <Grid sm={8} style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '7px' }}>
           {/* <Button className="mx-3" style={{ fontSize: '13px' }} >
             انتخاب همه <DoneAllOutlined />
@@ -617,25 +461,18 @@ const setNormal = (api) => {
             className="mx-3"
             style={{ fontSize: '13px' }}
             onClick={() => setModalMultiEdit(true)}
-            id="CustomBtn"
           >
             ویرایش موارد انتخابی <AutoFixHighOutlinedIcon />
           </Button>
 
-          <Button className="mx-3" color="error" onClick={onBtPrint} style={{ fontSize: '13px' }} id="CustomBtn" >
+          <Button className="mx-3" color="error" style={{ fontSize: '13px' }}>
             حذف موارد انتخابی <DeleteForeverOutlined />
           </Button>
-
-          <Button className="mx-3" onClick={onBtExport}  style={{ fontSize: '13px' }} id="CustomBtn" >
-            دانلود اکسل   <FileDownloadOutlined />
-          </Button>
-
-
-
         </Grid>
 
-        <FuseScrollbars className="grow overflow-x-auto">
-            <div style={gridStyle} id="myGrid" className="ag-theme-alpine">
+        <FuseScrollbars className="grow overflow-x-auto" id="rightClickTable">
+          <Dropdown overlay={ContextMenu} trigger={['contextMenu']}>
+            <div style={gridStyle} className="ag-theme-alpine">
               <AgGridReact
                 ref={gridRef}
                 rowData={rowData}
@@ -643,17 +480,7 @@ const setNormal = (api) => {
                 defaultColDef={defaultColDef}
                 gridOptions={gridOptions}
                 rowSelection="single"
-                enableRangeSelection="true"
-                allowContextMenuWithControlKey="true"
-                getContextMenuItems={getContextMenuItems}
-                animateRows="true"
                 onGridReady={onGridReady}
-                sideBar={sideBar}
-                rowHeight={60}
-                autoGroupColumnDef={autoGroupColumnDef}
-                groupIncludeFooter="true"
-                groupIncludeTotalFooter="true"
-                pinnedBottomRowData={pinnedBottomRowData}
                 // onCellFocused={() => setShowContext(true)}
                 onCellContextMenu={(e) => {
                   handlePartyId(e);
@@ -670,6 +497,8 @@ const setNormal = (api) => {
                 suppressPaginationPanel={false}
               />
             </div>
+          </Dropdown>
+>>>>>>> 82f2ca86fa050c0c7f55ecb0b2ba2655cc1021f6
         </FuseScrollbars>
       </div>
       <Modal
@@ -685,7 +514,11 @@ const setNormal = (api) => {
           <Text size={18}>آیا می خواهید این اطلاعات را حذف شوند؟</Text>
         </Modal.Header>
         <Modal.Body>
-          <Button color="error" onClick={handleDeleteproduct} width="50%">
+          <Button
+            color="error"
+            onClick={handleDeleteproduct}
+            width="50%"
+          >
             <Text size={14}>بلی</Text>
           </Button>{' '}
           <Button color="warning" width="50%" onClick={() => setModalDelete(false)}>
@@ -693,6 +526,8 @@ const setNormal = (api) => {
           </Button>
         </Modal.Body>
       </Modal>
+<<<<<<< HEAD
+=======
 
       <Modal
         style={{ paddingTop: '0px' }}
@@ -716,14 +551,9 @@ const setNormal = (api) => {
               borderRadius: '5px',
             }}
           >
-            {partyItemMultiEdit.map((partyItems) => {
-              return(
-                <>
-                  <option style={{ color: 'black', fontWeight: '600' }}>{partyItems} </option>
-                </>
-              )
-              })}
-
+            {partyItemMultiEdit.map((partyItems) => (
+              <option style={{ color: 'black', fontWeight: '600' }}>{partyItems}</option>
+            ))}
           </select>
         </Modal.Header>
 
@@ -749,8 +579,7 @@ const setNormal = (api) => {
                 }}
 
               >
-                <option>نجاران شیراز</option>
-                <option>کابینت سازان شیراز</option>
+                <option>option</option>
               </select>
 
               <select
@@ -815,6 +644,7 @@ const setNormal = (api) => {
           </Button>
         </Modal.Footer>
       </Modal>
+>>>>>>> 82f2ca86fa050c0c7f55ecb0b2ba2655cc1021f6
     </>
   );
 }

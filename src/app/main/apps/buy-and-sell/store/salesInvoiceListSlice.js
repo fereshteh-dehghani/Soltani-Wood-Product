@@ -25,9 +25,9 @@ export const updateSaleInvoice = createAsyncThunk('buyAndSell/updateSaleInvoice'
     return response;
 });
 
-export const deleteSaleInvoice = createAsyncThunk('buyAndSell/deleteSaleInvoice', async (saleInvoiceId) => {
-    const response = await axios.delete(apiUrlSaleInvoice, { saleInvoiceId });
-    return response.data;
+export const deleteSaleInvoice = createAsyncThunk('buyAndSell/deleteSaleInvoice/', async (saleInvoiceId) => {
+    const response = await axios.delete(`${apiUrlSaleInvoice}/${ saleInvoiceId }`);
+    return response;
 });
 
 const salesInvoiceListSlice = createSlice({

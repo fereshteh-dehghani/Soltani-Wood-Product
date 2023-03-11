@@ -43,7 +43,10 @@ const App = () => {
     <CacheProvider value={createCache(emotionCacheOptions[langDirection])}>
        {/* <CssBaseline /> */}
       <Auth>
+<<<<<<< HEAD
+=======
         {/* <BrowserRouter basename="/sitcoweb.ir/login" > */}
+>>>>>>> 82f2ca86fa050c0c7f55ecb0b2ba2655cc1021f6
         <BrowserRouter>
           <FuseAuthorization>
             <FuseTheme>

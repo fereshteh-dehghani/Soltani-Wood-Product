@@ -29,7 +29,6 @@ import DatePicker from 'react-multi-date-picker';
 import persian from 'react-date-object/calendars/persian';
 import persianFa from 'react-date-object/locales/persian_fa';
 import InputIcon from 'react-multi-date-picker/components/input_icon';
-import { border } from '@mui/system';
 
 const styleDatePicker = {
   'text-align': 'right',
@@ -102,10 +101,6 @@ const RegisterUserForm = () => {
   };
 
   const onSubmit = async (data) => {
-    // if (data.userImage.length > 0) {
-    //     data.userImage = convertToBase64(data.userImage[0]);
-    // }
-    // console.log(data);
     await axios
       .post(apiUrlRegisterUser, {
         ...data,
@@ -158,9 +153,7 @@ const RegisterUserForm = () => {
                 })
               );
             }
-            // resp.data.errors.forEach(function (name) {
-
-            // });
+           
           }
         } else {
           dispatch(
@@ -193,24 +186,29 @@ const RegisterUserForm = () => {
 
   return (
     <>
-      <Container component="main" maxWidth="md">
+      <Container component="main" maxWidth="sm">
         <Box
           sx={{
             marginTop: 8,
             display: 'flex',
             flexDirection: 'column',
-            alignItems: 'flex-start',
+            alignItems: 'center',
           }}
         >
           <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 3 }}>
+<<<<<<< HEAD
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <InputLabel id="first-name">نام</InputLabel>
+=======
             <Grid container spacing={1}>
               <Grid item xs={12} sm={4} pt={3}>
                 <InputLabel style={{ color: 'black' }} id="first-name">
                   نام
                 </InputLabel>
+>>>>>>> 82f2ca86fa050c0c7f55ecb0b2ba2655cc1021f6
 
                 <TextField
-                  sx={{ border: '0.5px solid black', borderRadius: '5px' }}
                   autoComplete="given-name"
                   name="firstName"
                   required
@@ -223,12 +221,16 @@ const RegisterUserForm = () => {
                   {...register('firstName')}
                 />
               </Grid>
+<<<<<<< HEAD
+              <Grid item xs={12} sm={6}>
+                <InputLabel id="last-name">نام خانوادگی</InputLabel>
+=======
               <Grid item xs={12} sm={4} pt={3}>
                 <InputLabel style={{ color: 'black' }} id="last-name">
                   نام خانوادگی
                 </InputLabel>
+>>>>>>> 82f2ca86fa050c0c7f55ecb0b2ba2655cc1021f6
                 <TextField
-                  sx={{ border: '0.5px solid black', borderRadius: '5px' }}
                   required
                   fullWidth
                   id="last-name"
@@ -240,6 +242,10 @@ const RegisterUserForm = () => {
                   {...register('lastName')}
                 />
               </Grid>
+<<<<<<< HEAD
+              <Grid item xs={12} md={6}>
+                <InputLabel id="username">نام کاربری</InputLabel>
+=======
 
               <Grid>
                 <Grid item xs={2} sm={4} mt={1} pr={5} pl={5} style={{ display:"flex" , flexDirection:"row"}}>
@@ -277,8 +283,8 @@ const RegisterUserForm = () => {
                 <InputLabel style={{ color: 'black' }} id="username">
                   نام کاربری
                 </InputLabel>
+>>>>>>> 82f2ca86fa050c0c7f55ecb0b2ba2655cc1021f6
                 <TextField
-                  sx={{ border: '0.5px solid black', borderRadius: '5px' }}
                   required
                   fullWidth
                   id="username"
@@ -292,12 +298,16 @@ const RegisterUserForm = () => {
                   //   onChange={(e) => setResult({ ...result, lastName: e.target.value })}
                 />
               </Grid>
+<<<<<<< HEAD
+              <Grid item xs={12} md={6}>
+                <InputLabel htmlFor="select-branch" shrink>
+=======
               <Grid item xs={12} md={4}>
                 <InputLabel style={{ color: 'black' , fontSize:"13px" }} htmlFor="select-branch" shrink>
+>>>>>>> 82f2ca86fa050c0c7f55ecb0b2ba2655cc1021f6
                   انتخاب شعبه
                 </InputLabel>
                 <TextField
-                  sx={{ border: '0.5px solid black', borderRadius: '5px' }}
                   required
                   select
                   fullWidth
@@ -320,12 +330,9 @@ const RegisterUserForm = () => {
                 </TextField>
                 {/* </FormControl> */}
               </Grid>
-              <Grid item xs={12} md={4}>
-                <InputLabel style={{ color: 'black' }} id="codeMelli">
-                  کدملی
-                </InputLabel>
+              <Grid item xs={12} md={6}>
+                <InputLabel id="codeMelli">کدملی</InputLabel>
                 <TextField
-                  sx={{ border: '0.5px solid black', borderRadius: '5px' }}
                   required
                   fullWidth
                   name="codeMelli"
@@ -337,31 +344,22 @@ const RegisterUserForm = () => {
                   {...register('codeMelli')}
                 />
               </Grid>
-              <Grid item xs={12} md={4}>
-                <InputLabel style={{ color: 'black' }} id="gender" shrink>
+              <Grid item xs={12} md={6}>
+                <InputLabel id="gender" shrink>
                   جنسیت
                 </InputLabel>
-                <TextField
-                  sx={{ border: '0.5px solid black', borderRadius: '5px' }}
-                  select
-                  fullWidth
-                  size="small"
-                  {...register('gender')}
-                >
-                  <MenuItem key="Male" value="Male">
+                <TextField select fullWidth size="small" {...register('gender')}>
+                  <MenuItem key="Male" value={0}>
                     آقا
                   </MenuItem>
-                  <MenuItem key="Female" value="Female">
+                  <MenuItem key="Female" value={1}>
                     خانم
                   </MenuItem>
                 </TextField>
               </Grid>
-              <Grid item xs={12} md={4}>
-                <InputLabel style={{ color: 'black' }} id="password">
-                  رمز عبور
-                </InputLabel>
+              <Grid item xs={12} md={6}>
+                <InputLabel id="password">رمز عبور</InputLabel>
                 <TextField
-                  sx={{ border: '0.5px solid black', borderRadius: '5px' }}
                   required
                   fullWidth
                   name="password"
@@ -373,12 +371,9 @@ const RegisterUserForm = () => {
                   {...register('password')}
                 />
               </Grid>
-              <Grid item xs={12} md={4}>
-                <InputLabel style={{ color: 'black' }} id="passwordConfirm">
-                  تکرار رمز عبور
-                </InputLabel>
+              <Grid item xs={12} md={6}>
+                <InputLabel id="passwordConfirm">تکرار رمز عبور</InputLabel>
                 <TextField
-                  sx={{ border: '0.5px solid black', borderRadius: '5px' }}
                   required
                   fullWidth
                   name="confirmPassword"
@@ -391,12 +386,9 @@ const RegisterUserForm = () => {
                 />
               </Grid>
 
-              <Grid item xs={12} md={4}>
-                <InputLabel style={{ color: 'black' }} id="phone-number">
-                  موبایل
-                </InputLabel>
+              <Grid item xs={12} md={6}>
+                <InputLabel id="phone-number">موبایل</InputLabel>
                 <TextField
-                  sx={{ border: '0.5px solid black', borderRadius: '5px' }}
                   required
                   fullWidth
                   name="phoneNumber"
@@ -409,12 +401,9 @@ const RegisterUserForm = () => {
                 />
               </Grid>
 
-              <Grid item xs={12} md={4}>
-                <InputLabel style={{ color: 'black' }} id="email">
-                  ایمیل
-                </InputLabel>
+              <Grid item xs={12} md={6}>
+                <InputLabel id="email">ایمیل</InputLabel>
                 <TextField
-                  sx={{ border: '0.5px solid black', borderRadius: '5px' }}
                   required
                   fullWidth
                   id="email"
@@ -425,17 +414,12 @@ const RegisterUserForm = () => {
                 />
               </Grid>
 
-              <Grid item xs={4} md={4}>
-                <InputLabel style={{ color: 'black' }} id="birthDate">
-                  تاریخ تولد
-                </InputLabel>
+              <Grid item xs={12} md={12}>
+                <InputLabel id="birthDate">تاریخ تولد</InputLabel>
                 <Controller
                   render={() => (
                     <DatePicker
-                      sx={{ border: '0.5px solid black', borderRadius: '5px' }}
                       id="birthDate"
-                      // render={<InputIcon />}
-                      //   value={dateOfBirth}
                       style={styleDatePicker}
                       calendar={persian}
                       locale={persianFa}
@@ -452,6 +436,11 @@ const RegisterUserForm = () => {
                 />
               </Grid>
 
+<<<<<<< HEAD
+              <Grid item xs={12}>
+                <InputLabel id="description">توضیحات</InputLabel>
+                <TextField
+=======
               <Grid item xs={12} md={12} fullWidth >
                 <InputLabel style={{ color: 'black' }} id="description">
                   توضیحات
@@ -459,6 +448,7 @@ const RegisterUserForm = () => {
                 <TextField
                   fullWidth
                   sx={{ border: '0.5px solid black', borderRadius: '5px' }}
+>>>>>>> 82f2ca86fa050c0c7f55ecb0b2ba2655cc1021f6
                   textarea
                   id="description"
                   name="description"
@@ -468,9 +458,39 @@ const RegisterUserForm = () => {
                   {...register('description')}
                 />
               </Grid>
+              <Grid item xs={2} mt={3}>
+                <Avatar
+                  // mt={8}
+                  alt="تصویر کاربر"
+                  src={image}
+                  sx={{ width: 80, height: 90, borderRadius: 5 }}
+                  mb={8}
+                />
+              </Grid>
+              <Grid item xs={12} mt={5}>
+                <Button component="label" variant="outline">
+                  آپلود تصویر
+                  <input
+                    accept="image/*"
+                    type="file"
+                    id="file"
+                    name="file"
+                    placeholder=""
+                    hidden
+                    // {...register('userImage')}
+                    onChange={(e) => {
+                      if (e.target.files[0]) {
+                        convertToBase64(e.target.files[0]);
+                      } else {
+                        setImage(Image);
+                      }
+                    }}
+                  />
+                </Button>
+              </Grid>
             </Grid>
             <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-              ثبت نام کاربر
+              ارسال
             </Button>
           </Box>
         </Box>

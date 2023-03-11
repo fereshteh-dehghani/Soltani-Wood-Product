@@ -162,10 +162,10 @@ export const apiUrlChangeStatus = '/api/Cash/ChangeStatus';
 export const apiUrlSaleInvoice = '/api/SaleInvoices';
 
 
-  // export const instance =axios.create({
-  //   baseURL: apiUrlBase,
-  //   headers: {
-  //     Authorization: `Bearer ${getCurrentToken().accessToken}`,
-  //     "content-type": "application/json",
-  //   },
-  // });
+// export const instance =axios.create({
+//   baseURL: apiUrlBase,
+//   headers: {
+//     Authorization: `Bearer ${getCurrentToken().accessToken}`,
+//     "content-type": "application/json",
+//   },
+// });

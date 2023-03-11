@@ -61,11 +61,12 @@ const Root = styled('div')(({ theme }) => ({
 
   '& .FusePageCarded-contentCard': {
     display: 'flex',
-    flex: '1 1 100%',
+    flex: '1 1 140%',
     flexDirection: 'column',
     backgroundColor: theme.palette.background.paper,
     boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
     minHeight: 0,
+    minWidth: 1480,
     borderRadius: '20px 20px 0 0',
   },
 
@@ -202,13 +203,13 @@ const FusePageCarded = forwardRef((props, ref) => {
             className={clsx(
               'FusePageCarded-contentWrapper',
               isLeftSidebar &&
-              (props.leftSidebarVariant === undefined ||
-                props.leftSidebarVariant === 'permanent') &&
-              'lg:ltr:pl-0 lg:rtl:pr-0',
+                (props.leftSidebarVariant === undefined ||
+                  props.leftSidebarVariant === 'permanent') &&
+                'lg:ltr:pl-0 lg:rtl:pr-0',
               isRightSidebar &&
-              (props.rightSidebarVariant === undefined ||
-                props.rightSidebarVariant === 'permanent') &&
-              'lg:pr-0'
+                (props.rightSidebarVariant === undefined ||
+                  props.rightSidebarVariant === 'permanent') &&
+                'lg:pr-0'
             )}
           >
             <FusePageCardedHeader header={props.header} />

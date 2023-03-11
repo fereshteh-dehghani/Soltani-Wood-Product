@@ -1,42 +1,85 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import FuseScrollbars from '@fuse/core/FuseScrollbars';
 import FuseLoading from '@fuse/core/FuseLoading';
 import { AgGridReact } from 'ag-grid-react';
+import 'ag-grid-enterprise';
 import 'ag-grid-community/dist/styles/ag-grid.css';
+import { DeleteOutline, EditOutlined } from '@mui/icons-material';
 import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
 import withRouter from '@fuse/core/withRouter';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Modal, Spacer, Text } from '@nextui-org/react';
-import RightClickParty from '../../right-click/RightClickParty';
 
-function SalesInvoiceTable({ rowData, handleDelete, handleUpdate, onGridReady, loading }) {
+function SalesInvoiceTable({
+  rowData,
+  handleDelete,
+  handleUpdate,
+  onGridReady,
+  loading,
+}) {
   const dispatch = useDispatch();
   const gridStyle = useMemo(
-    () => ({ height: '35vh', width: '97%', justifyContent: 'center', margin: '2% auto' }),
+    () => ({
+      height: "66vh",
+      width: '97%',
+      margin: 'auto',
+    }),
     []
   );
   const gridRef = useRef();
   const [modalDelete, setModalDelete] = useState(false);
   const [productId, setproductId] = useState();
 
+  // open update party on double click---------
+  const navigate = useNavigate();
+
+  // ----------------------------------------
+  const [updateData, setUpdateData] = useState();
+
+  useEffect(()=>{
+    console.log("hooooy")
+
+  },[updateData])
+
+  // Ag Grid onContext Menu***********************
+
+  const getContextMenuItems = useCallback(() => {
+    const result = [
+      {
+        name: 'ویرایش',
+        action: (e) => {
+          handleUpdate({...updateData});
+        },
+      },
+      {
+        name: ' حذف  ',
+        action: () => {
+          setModalDelete(true);
+        },
+        icon: <EditOutlined />,
+      },
+      'separator',
+      'chartRange',
+    ];
+    return result;
+  }, []);
+
+  // *********************************************
+
   function deleteSalesInvoiceItem(e) {
     const tagItem = (
       <div>
-        <Spacer y={0.5} />
-        <Button
-          color="error"
-          onPress={() => {
+        <button
+          type="button"
+          onClick={() => {
             setproductId(e.data.productId);
             setModalDelete(!modalDelete);
           }}
         >
-          <Text size={12} color="#fff">
-            {' '}
-            حذف
-          </Text>
-        </Button>
+          <DeleteOutline style={{ backgroundColor: 'red', borderRadius: '50%', padding: '3px' }} />
+        </button>
       </div>
     );
 
@@ -45,15 +88,26 @@ function SalesInvoiceTable({ rowData, handleDelete, handleUpdate, onGridReady, l
 
   function updateSalesInvoiceItem(e) {
     const tagItem = (
-      <div>
-        <Spacer y={0.5} />
-        <Button color="gradient" onClick={() => handleUpdate({ ...e.data })}>
-          <Text size={12}> ویرایش</Text>
-        </Button>
-      </div>
+      <button type="button" onClick={() => handleUpdate({ ...e.data })}>
+        <EditOutlined
+          style={{ backgroundColor: 'yellowgreen', borderRadius: '50%', padding: '3px' }}
+        />
+      </button>
     );
     return tagItem;
   }
+
+  // Auto size ag grid -------------
+
+  const autoSizeAll = useCallback((skipHeader) => {
+    const allColumnIds = [];
+    gridRef.current.columnApi.getColumns().forEach((column) => {
+      allColumnIds.push(column.getId());
+    });
+    gridRef.current.columnApi.autoSizeColumns(allColumnIds, skipHeader);
+  }, []);
+
+  // -------------------------------
 
   const defaultColDef = useMemo(() => ({
     sortable: true,
@@ -70,7 +124,6 @@ function SalesInvoiceTable({ rowData, handleDelete, handleUpdate, onGridReady, l
       editable: true,
       sortable: true,
       flex: 1,
-      minWidth: 100,
       filter: true,
       resizable: true,
       cellStyle: { border: 'solid 0.1px gray' },
@@ -84,32 +137,39 @@ function SalesInvoiceTable({ rowData, handleDelete, handleUpdate, onGridReady, l
     {
       field: 'quantity',
       headerName: 'مقدار',
+      width: 90,
     },
     {
       field: 'stockName',
       headerName: 'عنوان انبار',
+      width: 170,
     },
     {
       field: 'productPrice',
       headerName: 'مبلغ',
+      width: 100,
     },
     {
       field: 'sumProductPrice',
       headerName: 'مبلغ کل',
+      width: 170,
     },
     {
       field: 'description',
       headerName: 'توضیحات',
+      cellStyle: { 'white-space': 'normal' },
     },
     {
       field: 'productId',
       headerName: 'ویرایش',
       cellRenderer: updateSalesInvoiceItem,
+      width: 80,
     },
     {
       field: 'productId',
       headerName: 'حذف',
       cellRenderer: deleteSalesInvoiceItem,
+      width: 80,
     },
   ]);
 
@@ -119,9 +179,8 @@ function SalesInvoiceTable({ rowData, handleDelete, handleUpdate, onGridReady, l
 
   return (
     <>
-      <div className="w-full flex flex-col" style={{ justifyContent: 'center' }}>
+      <div className="w-full flex flex-col" style={{ justifyContent: 'flex-end' }}>
         <FuseScrollbars className="grow overflow-x-auto">
-          <RightClickParty />
           <div style={gridStyle} className="ag-theme-alpine">
             <AgGridReact
               ref={gridRef}
@@ -131,6 +190,13 @@ function SalesInvoiceTable({ rowData, handleDelete, handleUpdate, onGridReady, l
               gridOptions={gridOptions}
               rowSelection="single"
               onGridReady={onGridReady}
+              enableRangeSelection="true"
+              allowContextMenuWithControlKey="true"
+              getContextMenuItems={getContextMenuItems}
+              onCellContextMenu={(e) => {
+                setUpdateData(e.data);
+                setproductId(e.data.productId);
+              }}
             />
           </div>
         </FuseScrollbars>

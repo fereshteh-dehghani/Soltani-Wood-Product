@@ -1,34 +1,29 @@
-
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Modal, Input, Row, Checkbox, Button, Text, Card, Spacer, Grid } from "@nextui-org/react";
-import withRouter from "@fuse/core/withRouter";
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Modal, Input, Row, Checkbox, Button, Text, Card, Spacer, Grid } from '@nextui-org/react';
+import withRouter from '@fuse/core/withRouter';
 import FuseExample from '@fuse/core/FuseExample';
 import FuseHighlight from '@fuse/core/FuseHighlight';
 import Icon from '@mui/material/Icon';
 import Typography from '@mui/material/Typography';
-import axios from "axios";
+import axios from 'axios';
 import {
   apiUrlBase,
   apiUrlAddUserInformation,
   apiUrlUpdateUserInformation,
   apiUrlDeleteUserInformationAdmin,
 } from 'app/services/jwtService/defaultValues';
-import { AgGridReact } from "ag-grid-react";
-import "ag-grid-community/dist/styles/ag-grid.css";
-import "ag-grid-community/dist/styles/ag-theme-alpine.css";
-import { showMessage } from "app/store/fuse/messageSlice";
-import Select from "react-select";
-import { Controller, useForm } from "react-hook-form";
-
-
-
-
-
+import { AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
+import { showMessage } from 'app/store/fuse/messageSlice';
+import Select from 'react-select';
+import { Controller, useForm } from 'react-hook-form';
+import '../../../../../styles/MyStyles.css';
 
 const styleSelect = {
   width: 500,
   height: '10px',
-}
+};
 const styleButton = {
   fontSize: '50',
   borderRadius: '$xs', // radii.xs
@@ -47,7 +42,7 @@ const styleButton = {
   '&:focus': {
     borderColor: '$pink400',
   },
-}
+};
 const styleButtonForm = {
   fontSize: '50',
   fontWeight: 'bold',
@@ -67,7 +62,7 @@ const styleButtonForm = {
   '&:focus': {
     borderColor: '$pink400',
   },
-}
+};
 const styleButtonEdit = {
   fontSize: '17',
   fontWeight: 'bold',
@@ -87,7 +82,7 @@ const styleButtonEdit = {
   '&:focus': {
     borderColor: '#17D8DB',
   },
-}
+};
 
 const defaultValues = {
   typeInfo: '',
@@ -98,24 +93,23 @@ const options = [
   { value: 'email', label: 'ایمیل' },
   { value: 'bankAccountNumber', label: 'شماره حساب' },
   { value: 'socialMedia', label: 'حساب شبکه های اجتماعی' },
-]
+];
 
 const UserInformation = ({ userInformation, userId }) => {
   // const [showModal, setShowModal] = useState(false);
-
 
   const [userInfo, setUserInfo] = useState({});
   const [visible, setVisible] = useState(false);
   const gridRef = useRef();
   const gridStyle = useMemo(() => ({ height: 400 }), []);
   const [rowData, setRowData] = useState(userInformation);
-  const [txtFormBtn, setTxtFormBtn] = useState("ذخیره");
-  const [modalTitle, setModalTitle] = useState("اطلاعات جانبی");
+  const [txtFormBtn, setTxtFormBtn] = useState('ذخیره');
+  const [modalTitle, setModalTitle] = useState('اطلاعات جانبی');
   const [styleBtnForm, setStyleBtnForm] = useState(styleButtonForm);
 
   const onGridReady = useEffect(() => {
     setRowData(userInformation);
-  }, [userInfo,rowData]);
+  }, [userInfo, rowData]);
   const onUserInformationUpdate = () => {
     try {
       axios
@@ -128,66 +122,59 @@ const UserInformation = ({ userInformation, userId }) => {
             const updateUserInfoRes = response.data;
             if (updateUserInfoRes !== null && updateUserInfoRes.status === 0) {
               showMessage({
-                message: " ویرایش اطلاعات با خطا انجام شد",
+                message: ' ویرایش اطلاعات با خطا انجام شد',
                 autoHideDuration: 6000,
                 anchorOrigin: {
                   vertical: 'top',
                   horizontal: 'right',
                 },
                 variant: 'success',
-              })
-
+              });
             } else {
-
               showMessage({
-                message: "ویرایش اطلاعات با خطا انجام شد",
+                message: 'ویرایش اطلاعات با خطا انجام شد',
                 autoHideDuration: 6000,
                 anchorOrigin: {
                   vertical: 'top',
                   horizontal: 'right',
                 },
                 variant: 'alert',
-              })
-
+              });
             }
           } else {
-
             showMessage({
-              message: "خطایی در فرایند  ویرایش اطلاعات رخ داده است",
+              message: 'خطایی در فرایند  ویرایش اطلاعات رخ داده است',
               autoHideDuration: 6000,
               anchorOrigin: {
                 vertical: 'top',
                 horizontal: 'right',
               },
               variant: 'alert',
-            })
-
+            });
           }
         })
         .catch((erroere) => {
           console.log(erroere);
           showMessage({
-            message: "خطا در ویرایش اطلاعات",
+            message: 'خطا در ویرایش اطلاعات',
             autoHideDuration: 6000,
             anchorOrigin: {
               vertical: 'top',
               horizontal: 'right',
             },
             variant: 'alert',
-          })
-
+          });
         });
     } catch (error2) {
       showMessage({
-        message: "خطا در ویرایش اطلاعات",
+        message: 'خطا در ویرایش اطلاعات',
         autoHideDuration: 6000,
         anchorOrigin: {
           vertical: 'top',
           horizontal: 'right',
         },
         variant: 'alert',
-      })
-
+      });
     }
   };
 
@@ -205,77 +192,69 @@ const UserInformation = ({ userInformation, userId }) => {
             if (addUserInfoRes !== null && addUserInfoRes.status === 0) {
               setUserInfo({});
               showMessage({
-                message: "اطلاعات با موفقیت اضافه شد",
+                message: 'اطلاعات با موفقیت اضافه شد',
                 autoHideDuration: 6000,
                 anchorOrigin: {
                   vertical: 'top',
                   horizontal: 'right',
                 },
                 variant: 'success',
-              })
-
+              });
             } else if (addUserInfoRes === null) {
               showMessage({
-                message: "عملیات ناموفق ",
+                message: 'عملیات ناموفق ',
                 autoHideDuration: 6000,
                 anchorOrigin: {
                   vertical: 'top',
                   horizontal: 'right',
                 },
                 variant: 'success',
-              })
-
+              });
             } else {
-
               showMessage({
-                message: "عملیات ناموفق ",
+                message: 'عملیات ناموفق ',
                 autoHideDuration: 6000,
                 anchorOrigin: {
                   vertical: 'top',
                   horizontal: 'right',
                 },
                 variant: 'alert',
-              })
-
+              });
             }
           } else {
-
             showMessage({
-              message: "خطایی در فرایند  اضافه کردن اطلاعات رخ داده است",
+              message: 'خطایی در فرایند  اضافه کردن اطلاعات رخ داده است',
               autoHideDuration: 6000,
               anchorOrigin: {
                 vertical: 'top',
                 horizontal: 'right',
               },
               variant: 'alert',
-            })
-
+            });
           }
         })
         .catch((erroere) => {
           console.log(erroere);
           showMessage({
-            message: "خطا در  فرایند عملیات",
+            message: 'خطا در  فرایند عملیات',
             autoHideDuration: 6000,
             anchorOrigin: {
               vertical: 'top',
               horizontal: 'right',
             },
             variant: 'alert',
-          })
-
+          });
         });
     } catch (error2) {
       showMessage({
-        message: "خطا در  فرایند عملیات",
+        message: 'خطا در  فرایند عملیات',
         autoHideDuration: 6000,
         anchorOrigin: {
           vertical: 'top',
           horizontal: 'right',
         },
         variant: 'alert',
-      })
-
+      });
     }
   };
 
@@ -291,38 +270,34 @@ const UserInformation = ({ userInformation, userId }) => {
             const deketeUserInfoRes = response.data;
             if (deketeUserInfoRes !== null && deketeUserInfoRes.status === 0) {
               showMessage({
-                message: "حذف با موفقیت انجام شد",
+                message: 'حذف با موفقیت انجام شد',
                 autoHideDuration: 6000,
                 anchorOrigin: {
                   vertical: 'top',
                   horizontal: 'right',
                 },
                 variant: 'alert',
-              })
-
+              });
             } else if (deketeUserInfoRes === null) {
               showMessage({
-                message: "خطا در حذف اطلاعات",
+                message: 'خطا در حذف اطلاعات',
                 autoHideDuration: 6000,
                 anchorOrigin: {
                   vertical: 'top',
                   horizontal: 'right',
                 },
                 variant: 'alert',
-              })
-
-
+              });
             } else {
               showMessage({
-                message: "خطایی در فرایند حذف اطلاعات رخ داده است",
+                message: 'خطایی در فرایند حذف اطلاعات رخ داده است',
                 autoHideDuration: 6000,
                 anchorOrigin: {
                   vertical: 'top',
                   horizontal: 'right',
                 },
                 variant: 'alert',
-              })
-
+              });
             }
           }
         })
@@ -335,9 +310,7 @@ const UserInformation = ({ userInformation, userId }) => {
               horizontal: 'right',
             },
             variant: 'alert',
-          })
-
-
+          });
         });
     } catch (error2) {
       showMessage({
@@ -348,8 +321,7 @@ const UserInformation = ({ userInformation, userId }) => {
           horizontal: 'right',
         },
         variant: 'alert',
-      })
-
+      });
     }
   };
 
@@ -359,10 +331,10 @@ const UserInformation = ({ userInformation, userId }) => {
         <Button
           css={styleButtonEdit}
           onPress={() => {
-            setStyleBtnForm(styleButtonEdit)
-            setTxtFormBtn("ویرایش")
-            setModalTitle("ویرایش اطلاعات");
-            setUserInfo(e.data );
+            setStyleBtnForm(styleButtonEdit);
+            setTxtFormBtn('ویرایش');
+            setModalTitle('ویرایش اطلاعات');
+            setUserInfo(e.data);
           }}
         >
           ویرایش
@@ -375,28 +347,23 @@ const UserInformation = ({ userInformation, userId }) => {
   function deleteUserInfo(e) {
     const tagItem = (
       <div>
-        <Button
-
-          onClick={() => onDeleteUserAddress(e.data.id)}
-        >
-          حذف
-        </Button>
+        <Button onClick={() => onDeleteUserAddress(e.data.id)}>حذف</Button>
       </div>
     );
     return tagItem;
   }
   const [columnDefs] = useState([
-    { field: "propertyName", headerName: "نوع اطلاعات", minWidth: 250 },
-    { field: "propertyValue", headerName: "مقدار اطلاعات", minWidth: 120 },
+    { field: 'propertyName', headerName: 'نوع اطلاعات', minWidth: 250 },
+    { field: 'propertyValue', headerName: 'مقدار اطلاعات', minWidth: 120 },
     {
-      field: "edit",
-      headerName: "ویرایش",
+      field: 'edit',
+      headerName: 'ویرایش',
       cellRenderer: editUserInfo,
       minWidth: 80,
     },
     {
-      field: "delete",
-      headerName: "حذف",
+      field: 'delete',
+      headerName: 'حذف',
       cellRenderer: deleteUserInfo,
       minWidth: 80,
     },
@@ -414,7 +381,7 @@ const UserInformation = ({ userInformation, userId }) => {
     rowData: null,
     enableRtl: true,
     scroll: true,
-    domLayout: "autoHeight",
+    domLayout: 'autoHeight',
     animateRows: true,
     defaultColDef: {
       editable: true,
@@ -429,19 +396,16 @@ const UserInformation = ({ userInformation, userId }) => {
   const handler = () => setVisible(true);
   const closeHandler = () => {
     setVisible(false);
-    console.log("closed");
+    console.log('closed');
   };
   return (
     <div>
       <Spacer y={0.5} />
-      <Button
-        css={styleButton}
-        auto
-        onClick={handler}
-      >
+      <Button css={styleButton} auto onClick={handler}>
         اطلاعات جانبی
       </Button>
       <Modal
+        style={{paddingTop:"0px"}}
         closeButton
         blur
         width="60%"
@@ -449,22 +413,16 @@ const UserInformation = ({ userInformation, userId }) => {
         open={visible}
         onClose={closeHandler}
       >
-        <Modal.Header>
-          <Text size={18}>
-            {modalTitle}
-          </Text>
+        <Modal.Header className="Modal-Header">
+          <Text size={18}>{modalTitle}</Text>
         </Modal.Header>
         <Modal.Body>
           <Grid.Container justify="center">
             <Grid xs={12}>
-              <form
-                noValidate
-                className="flex flex-col justify-center w-full"
-              >
+              <form noValidate className="flex flex-col justify-center w-full">
                 {/* <label id="aria-label"  htmlFor="aria-example-input"> */}
                 <Grid.Container gap={4} justify="center" AlignItems="stretch">
                   <Grid xs={6}>
-
                     <Select
                       label="نوع اطلاعات"
                       inputId="aria-example-input"
@@ -473,7 +431,7 @@ const UserInformation = ({ userInformation, userId }) => {
                       defaultValue={{ value: userInfo.propertyName, label: userInfo.propertyName }}
                       value={{ value: userInfo.propertyName, label: userInfo.propertyName }}
                       classNamePrefix="select"
-                      style={{ width: "500px" }}
+                      style={{ width: '500px' }}
                       isRtl
                       options={options}
                       onChange={(e) => {
@@ -481,16 +439,12 @@ const UserInformation = ({ userInformation, userId }) => {
                           ...userInfo,
                           propertyName: e.value,
                         });
-                      }
-                      }
-
+                      }}
                     />
-
                   </Grid>
                   <Grid xs={6}>
-
                     <Input
-                      type='text'
+                      type="text"
                       shadow
                       status="scondary"
                       bordered
@@ -502,12 +456,10 @@ const UserInformation = ({ userInformation, userId }) => {
                         setUserInfo({
                           ...userInfo,
                           propertyValue: e.target.value,
-                        })
-                        console.log(userInfo)
-                      }
-                      }
+                        });
+                        console.log(userInfo);
+                      }}
                     />
-
                   </Grid>
                   <Grid xs={6}>
                     <Button
@@ -555,17 +507,15 @@ const UserInformation = ({ userInformation, userId }) => {
               </Card>
             </Grid>
           </Grid.Container>
-
         </Modal.Body>
         <Modal.Footer>
-
           {/* <Button auto onClick={closeHandler}>
             Sign in
           </Button> */}
         </Modal.Footer>
       </Modal>
     </div>
-  )
-}
+  );
+};
 
 export default UserInformation;

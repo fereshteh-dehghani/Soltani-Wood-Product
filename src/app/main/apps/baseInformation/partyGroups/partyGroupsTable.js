@@ -17,7 +17,6 @@ import AutoFixHighOutlinedIcon from '@mui/icons-material/AutoFixHighOutlined';
 import { showMessage } from 'app/store/fuse/messageSlice';
 import { deletePartyGroup, updatePartyGroup } from '../store/partyGroupSlice';
 import UpdatePartyGroup from './updatePartyGroup';
-import RightContext from '../../right-click/RightClickProduct';
 
 const styleButton = {
   'font-size': '12px',
