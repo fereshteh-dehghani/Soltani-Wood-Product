@@ -4,7 +4,7 @@ import axios from 'axios';
 import FusePageCarded from '@fuse/core/FusePageCarded';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { Grid, useMediaQuery } from '@mui/material';
+import { Grid } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { FormProvider, useForm } from 'react-hook-form';
 import { showMessage } from 'app/store/fuse/messageSlice';
@@ -22,11 +22,17 @@ import { Spacer } from '@nextui-org/react';
 import reducer from '../store';
 import SalesInvoiceForm from './SalesInvoiceForm';
 import SalesInvoiceTable from './SalesInvoiceTable';
-import { deleteFromInvoiceItems, resetInvoiceItems, setProduct } from '../store/salesInvoiceSlice';
-import SalesInvoiceHeader from './SalesInvoiceHeader';
-import { fetchSalesInvoice, updateSaleInvoice } from '../store/salesInvoiceListSlice';
+import {
+  deleteFromInvoiceItems,
+  resetInvoiceItems,
+  setProduct,
+  resetPartyBankAccountlist,
+  resetDebitPartyInfo,
+} from '../store/salesInvoiceSlice';
+import { fetchSalesInvoice } from '../store/salesInvoiceListSlice';
 import SaleInvoiceProductSpecification from './saleInvoiceProductSpecification';
 import PaymentTable from './payment-method/PaymentTable';
+// import { resetPartyBankAccountlist } from '../../baseInformation/store/partyListSlice';
 
 const Root = styled(FusePageCarded)(({ theme }) => ({
   '& .FusePageCarded-header': {
@@ -46,7 +52,7 @@ const Root = styled(FusePageCarded)(({ theme }) => ({
 }));
 
 const schema = yup.object().shape({
-  date: yup.string().required('فیلد تاریخ الزامی می باشد!'),
+  datePer: yup.string().required('فیلد تاریخ الزامی می باشد!'),
   partyId: yup.number().required('نام مشتری الزامی می باشد'),
   saleInvoiceItems: yup.array().min(1, 'فاکتور فروش باید حداقل شامل یک  قلم کالا باشد!'),
 });
@@ -61,6 +67,15 @@ function SalesInvoice() {
   const [selectedPartyId, setSelectedPartyId] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [saleInvoiceNumber, setSaleInvoiceNumber] = useState();
+  const { isDisabled, setIsDisabled } = useState(true);
+
+  // const [paymentMethods, setPaymentMethods] = useState({
+  //   settlementCashItems: [],
+  //   receiptBankReceiptItems: [],
+  //   paymentBankDraftItems: [],
+  //   receiptChequeItems: [],
+  //   paymentChequeItems: [],
+  // })
   const routeParams = useParams();
   // const { reset, watch, control, onChange, formState, getValues } = methods;
   useEffect(() => {
@@ -110,7 +125,7 @@ function SalesInvoice() {
   const methods = useForm({
     mode: 'onChange',
     defaultValues: {
-      date: '',
+      datePer: '',
       partyId: 0,
       stockId: 0,
       partyRealName: '',
@@ -121,7 +136,7 @@ function SalesInvoice() {
   });
   const { getValues, watch, reset, setValue } = methods;
   const form = watch();
-  const { date } = watch();
+  const { datePer } = watch();
   const { partyId } = watch();
   const { saleInvoiceItems } = watch();
 
@@ -138,7 +153,7 @@ function SalesInvoice() {
             setValue('partyId', data.partyId);
             setValue('partyRealName', data.partyRealName);
             setValue('description', data.description);
-            setValue('date', data.datePer);
+            setValue('datePer', data.datePer);
             setSelectedPartyId(data.partyId);
             // selectParty(data.partyId);
           })
@@ -151,7 +166,7 @@ function SalesInvoice() {
         setSaleInvoiceData({});
         setSaleInvoiceNumber();
         reset({
-          date: '',
+          datePer: '',
           partyId: 0,
           partyRealName: '',
           phoneNumber: '',
@@ -180,7 +195,7 @@ function SalesInvoice() {
     );
     dispatch(resetInvoiceItems([]));
     reset({
-      date: '',
+      datePer: '',
       partyId: 0,
       partyRealName: '',
       phoneNumber: '',
@@ -193,7 +208,63 @@ function SalesInvoice() {
     setPartyList([]);
   };
 
+  /* Categorize the payment method */
+  const categorizePaymentMethods = () => {
+    const cashArray = [];
+    const receiptBank = [];
+    const paymentBank = [];
+    const receiptCheque = [];
+    const paymentCheque = [];
+
+    const paymentMethods = {
+      settlementCashItems: [],
+      receiptBankReceiptItems: [],
+      paymentBankDraftItems: [],
+      receiptChequeItems: [],
+      paymentChequeItems: [],
+      offSettings: [],
+      totalDiscount:0,
+    };
+    paymentMethodsItems?.forEach((item) => {
+      if (item.paymentMethod === 'settlementCashItems') {
+        cashArray.push(item);
+      }
+      if (item.paymentMethod === 'receiptBank') {
+        receiptBank.push(item);
+      }
+      if (item.paymentMethod === 'paymentBank') {
+        paymentBank.push(item);
+      }
+      if (item.paymentMethod === 'recieptCheque') {
+        receiptCheque.push(item);
+      }
+      if (item.paymentMethod === 'paymentCheque') {
+        paymentCheque.push(item);
+      }
+      if (item.paymentMethod === 'offSetting') {
+        paymentMethods.offSettings.push(item);
+      }
+      if (item.paymentMethod === 'discount') {
+        paymentMethods.totalDiscount=item.amount;
+      }
+      // recieptCheque
+    });
+
+    paymentMethods.settlementCashItems = cashArray;
+    paymentMethods.receiptBankReceiptItems = receiptBank;
+    paymentMethods.paymentBankDraftItems = paymentBank;
+    paymentMethods.paymentBankDraftItems = paymentBank;
+    paymentMethods.receiptChequeItems = receiptCheque;
+    paymentMethods.paymentChequeItems = paymentCheque;
+
+    return paymentMethods;
+  };
+
+  /* end ...  */
+
   const submitForm = async () => {
+    const paymentMethods = categorizePaymentMethods();
+    console.log(paymentMethods);
     const { saleInvoiceId } = routeParams;
     setIsLoading(!isLoading);
     if (partyId === 0 || partyId === undefined) {
@@ -211,7 +282,7 @@ function SalesInvoice() {
       setIsLoading(!isLoading);
       return;
     }
-    if (date === '' || date === undefined) {
+    if (datePer === '' || datePer === undefined) {
       dispatch(
         showMessage({
           message: 'تاریخ را وارد کنید!', // text or html
@@ -242,11 +313,12 @@ function SalesInvoice() {
       return;
     }
     const formData = getValues();
+
     if (saleInvoiceId !== 'new') {
       axios
         .put(apiUrlSaleInvoice, {
           ...saleInvoiceData,
-          date: formData.date,
+          datePer: formData.datePer,
           partyId: formData.partyId,
           stockId: formData.stockId,
           remainingPrice: formData.remainingPrice,
@@ -262,7 +334,7 @@ function SalesInvoice() {
         .catch((error) => {
           dispatch(
             showMessage({
-              message: 'عملیات با خطا انجام شد', // text or html
+              message: `${error} \n عملیات با خطا مواجه شد`, // text or html
               autoHideDuration: 6000, // ms
               anchorOrigin: {
                 vertical: 'top', //   top bottom
@@ -274,37 +346,68 @@ function SalesInvoice() {
           setIsLoading(false);
         });
     } else {
-      const response = await axios.post(apiUrlSaleInvoice, {
-        date: formData.date,
-        partyId: formData.partyId,
-        stockId: formData.stockId,
-        remainingPrice: formData.remainingPrice,
-        isOnConsignment: false,
-        description: formData.description,
-        partyRealName: formData.partyRealName,
-        saleInvoiceItems: formData.saleInvoiceItems,
-      });
-
-      if (response.status === 201) {
-        resetData();
-        setSaleInvoiceNumber(response.data.saleInvoiceNumber);
-      } else {
-        dispatch(
-          showMessage({
-            message: 'عملیات با خطا انجام شد', // text or html
-            autoHideDuration: 6000, // ms
-            anchorOrigin: {
-              vertical: 'top', //   top bottom
-              horizontal: 'right', //  left center right
-            },
-            variant: 'error', //   success error info warning null
-          })
-        );
-        setIsLoading(false);
-      }
+      const response = await axios
+        .post(apiUrlSaleInvoice, {
+          datePer: formData.datePer,
+          partyId: formData.partyId,
+          stockId: formData.stockId,
+          remainingPrice: formData.remainingPrice,
+          isOnConsignment: false,
+          description: formData.description,
+          partyRealName: formData.partyRealName,
+          saleInvoiceItems: formData.saleInvoiceItems,
+          settlementCashItems: paymentMethods.settlementCashItems,
+          receiptBankReceiptItems: paymentMethods.receiptBankReceiptItems,
+          paymentBankDraftItems: paymentMethods.paymentBankDraftItems,
+          receiptChequeItems: paymentMethods.receiptChequeItems,
+          paymentChequeItems: paymentMethods.paymentChequeItems,
+          offSettings: paymentMethods.offSettings,
+          totalDiscount:paymentMethods.totalDiscount,
+        })
+        .then(() => {
+          if (response.status === 201) {
+            resetData();
+            setSaleInvoiceNumber(response.data.saleInvoiceNumber);
+          } else {
+            dispatch(
+              showMessage({
+                message: 'عملیات با خطا انجام شد', // text or html
+                autoHideDuration: 6000, // ms
+                anchorOrigin: {
+                  vertical: 'top', //   top bottom
+                  horizontal: 'right', //  left center right
+                },
+                variant: 'error', //   success error info warning null
+              })
+            );
+            setIsLoading(false);
+          }
+        })
+        .catch((error) => {
+          dispatch(
+            showMessage({
+              message: `${error} \n عملیات با خطا مواجه شد`, // text or html
+              autoHideDuration: 6000, // ms
+              anchorOrigin: {
+                vertical: 'top', //   top bottom
+                horizontal: 'right', //  left center right
+              },
+              variant: 'error', //   success error info warning null
+            })
+          );
+        });
     }
   };
-
+  /* FIND PARTY BANK ACCOUNT LIST FUNCTION */
+  function findPartyBankAccountList(partyIdSelected) {
+    const findParty = partyList?.find((party) => party.partyId === partyIdSelected);
+    dispatch(resetPartyBankAccountlist([...findParty.partyBankAccount]));
+    dispatch(
+      resetDebitPartyInfo({ debitPartyId: partyIdSelected, debitPartyName: findParty.fullName })
+    );
+    setIsDisabled(false);
+  }
+  /* END FUNCTION  */
   const theme = useTheme();
   // const mdDown = useMediaQuery(theme.breakpoints.down('lg'));
   const settings = useSelector(({ fuse }) => fuse.settings.current);
@@ -327,7 +430,6 @@ function SalesInvoice() {
   return (
     <FormProvider {...methods}>
       <Root
-
         content={
           <>
             <Grid container mt={1} alignItems="flex-start">
@@ -352,6 +454,7 @@ function SalesInvoice() {
                         selectParty={selectParty}
                         saleInvoiceNumber={saleInvoiceNumber}
                         getSaleInvoice={saleInvoiceData}
+                        findPartyBankAccountList={findPartyBankAccountList}
                         handleSubmit={submitForm}
                         isLoading={isLoading}
                       />
@@ -364,13 +467,14 @@ function SalesInvoice() {
                         handleDelete={handleDelete}
                         handleUpdate={handleUpdate}
                       />
+                      <Spacer y={0.5} />
                       <PaymentTable
                         rowData={paymentMethodsItems}
+                        partyId={partyId}
+                        isDisabled={isDisabled}
                       />
                     </Grid>
-
                   </Grid>
-
                 </Grid>
                 {/* <Grid container justifyContent="flex-end" mt={3} row>
                   <Grid item xs={12} sm={8}>

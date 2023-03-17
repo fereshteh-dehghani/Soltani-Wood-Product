@@ -1,4 +1,5 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import axios from 'axios';
 import { Modal, Button, Text } from "@nextui-org/react";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
@@ -8,24 +9,29 @@ import FuseUtils from "@fuse/utils/FuseUtils";
 import Select from "react-select";
 import '../../../../../../../styles/MyStyles.css'
 import { Grid, MenuItem, TextField, InputLabel } from "@mui/material";
+import { apiUrlGetPartyListForFactor } from "app/services/jwtService/defaultValues";
 import DatePicker from 'react-multi-date-picker';
 import persian from 'react-date-object/calendars/persian';
 import persianFa from 'react-date-object/locales/persian_fa';
 import { addToPaymentMethodsItems, findPaymentMethodData, updatePaymentMethodsItems } from "../../../store/paymentMethodsSlice";
 import { handleModals } from "../../../store/handleModalsSlice";
 
+
 const styleSaveBtn = {
-    backgroundColor: '#00d084',
+    backgroundColor: "#153247",
     borderRadius: '5px',
-    fontSize: '1.2rem',
-    width: '20%',
+    width: '48%',
     padding: '5px',
+    paddingLeft: '50px',
+    paddingRight: '50px',
 }
 const styleCancelBtn = {
     borderRadius: '5px',
     fontSize: '1.2rem',
-    width: '15%',
+    width: '48%',
     padding: '5px',
+    paddingLeft: '50px',
+    paddingRight: '50px',
 }
 
 const styleDatePicker = {
@@ -33,7 +39,7 @@ const styleDatePicker = {
     padding: '4px 12px',
     'background-color': 'white',
     height: '36px',
-    width: '120%',
+    width: '100%',
 };
 
 const styleDiv = {
@@ -41,8 +47,10 @@ const styleDiv = {
 }
 
 const defaultValue = {
-    type: '',
-    price: '',
+    debitPartyId: -1,
+    creditPartyId: -1,
+    datePer: '',
+    amount: '',
     description: ''
 }
 
@@ -54,13 +62,20 @@ export default function TransferMethod({
     convertPriceToNumber
 }) {
 
-    const { handleTransferMethod } = useSelector(({ buyAndSell }) => buyAndSell.handleModalsSlice)
+    const { handleTransferMethod } = useSelector(({ buyAndSell }) => buyAndSell.handleModalsSlice);
+    const { debitPartyInfo } = useSelector(({ buyAndSell }) => buyAndSell.salesInvoiceSlice);
     const dispatch = useDispatch();
-    const closeHandler = () => dispatch(handleModals({ type: 'transfer', isOpen: false }));
+    const [partyList, setPartyList] = useState([]);
+    const [optionsUsers, setOptionsUsers] = useState([]);
+    const closeHandler = () => {
+        dispatch(findPaymentMethodData({}));
+        dispatch(handleModals({ type: 'offSetting', isOpen: false }))
+    };
 
     const schema = yup.object().shape({
-        type: yup.number().required('لطفا نوع پرداخت را مشخص کنید!'),
-        price: yup.number().required('لطفا مبلغ را وارد کنید!'),
+        creditPartyId: yup.number().required('لطفا شخص دریافت کننده را مشخص کنید!'),
+        amount: yup.number().required('لطفا مبلغ را وارد کنید!'),
+        datePer: yup.string().required('لطفا تاریخ را وارد کنید!')
     })
 
     const {
@@ -75,21 +90,28 @@ export default function TransferMethod({
         resolver: yupResolver(schema),
     });
 
-    const type = watch('type');
-    const price = watch('price');
+    const amount = watch('amount');
+    const creditPartyId = watch('creditPartyId');
+    const description = watch('description');
 
     const handleClick = (data) => {
+
+        const findCreditPartyName = optionsUsers.find((item) => item.value === creditPartyId).label;
+
         if (paymentMethodData?.id !== undefined) {
             dispatch(updatePaymentMethodsItems({
                 ...paymentMethodData,
                 ...data,
+                description: `انتقال  مبلغ ${amount} از حساب ${debitPartyInfo.debitPartyName}  به شخص ${findCreditPartyName}`
+
             }))
         } else {
             dispatch(addToPaymentMethodsItems({
                 id: FuseUtils.generateGUID(),
-                paymentMethod: 'transfer',
-                paymentMethodPer: 'واریز به حساب',
-                ...data
+                paymentMethod: 'offSetting',
+                paymentMethodPer: 'تهاتر',
+                ...data,
+                description: ` انتقال  مبلغ ${amount} از حساب ${debitPartyInfo.debitPartyName}  به شخص ${findCreditPartyName}`
             }
             ));
         }
@@ -100,86 +122,107 @@ export default function TransferMethod({
 
     useEffect(() => {
         if (paymentMethodData?.id !== undefined) reset(paymentMethodData);
+        setValue('debitPartyId', debitPartyInfo.debitPartyId)
     }, [])
 
+
+    useEffect(() => {
+        axios
+            .get(`${apiUrlGetPartyListForFactor}?textToFind=${''}`)
+            .then((resp) => {
+                const result = [...resp.data.result];
+                const tempArray = [];
+                setPartyList(result);
+                result.forEach((item) => {
+                    tempArray.push({ value: item.partyId, label: item.fullName });
+                });
+                setOptionsUsers([...tempArray]);
+            })
+            .catch((err) => {
+                console.log('Error in Get Userslist', err);
+            });
+    }, []);
 
 
     return (
         <div>
             <Modal
                 closeButton
+                style={{ alignItems: "center", paddingTop: "0px" }}
                 aria-labelledby="modal-title"
-                width="40%"
-                height="40%"
+                width="60%"
+                height="60%"
                 open={handleTransferMethod}
                 onClose={closeHandler}
             >
-                <Modal.Header className="modal-header-style">
-                    <Text id="modal-title" size={18}>
+                <Modal.Header style={{ backgroundColor: "#1B2330", width: "100%", padding: '2%' }}>
+                    <Text id="modal-title" size={18} color="#fff">
                         واریز به حساب
                     </Text>
                 </Modal.Header>
                 <Modal.Body>
-                    <Grid style={styleDiv} container justifyContent="center" marginX="10px" row>
+                    <Grid style={styleDiv} container justifyContent="center" marginX="10px" row spacing={1}>
                         <Grid item xs={12} sm={9} className="mx-24 mt-16 mb-5">
-                            <InputLabel>عملیات</InputLabel>
+                            <Text size={16} color="#333">
+                                دریافت از : <span> {`${debitPartyInfo.debitPartyName} `} </span>
+                            </Text>
+                        </Grid>
+
+
+                        <Grid item xs={12} sm={9} className="mt-16 mb-5">
+                            <InputLabel>پرداخت به شخص</InputLabel>
                             <Select
                                 isRtl
                                 className="basic-single"
                                 classNamePrefix="select"
                                 isSearchable
-                                name="userId"
+                                name="creditPartyId"
                                 style={{ direction: 'rtl' }}
-                                options={operationOptions}
-                                value={operationOptions?.find((item) => item.value === type)}
+                                options={optionsUsers}
+                                value={optionsUsers?.find((item) => item.value === creditPartyId)}
                                 onChange={(event) => {
-                                    setValue('type', event.value);
+                                    setValue('creditPartyId', event.value);
                                 }}
                             />
-                        </Grid>
-                        <Grid item xs={12} sm={9} className="mx-24 my-5">
-                            <InputLabel htmlFor="person">شخص</InputLabel>
-                            <TextField
-                                required
-                                fullWidth
-                                name="شخص"
-                                id="شخص"
-                                size="small"
-                                {...register('person')}
+                            {errors?.creditPartyId && <span className="text-danger">{errors?.creditPartyId?.message}</span>}
 
-                            />
                         </Grid>
-                        <Grid item xs={12} sm={9} className="mx-24 my-5">
+                        <Grid item xs={12} sm={5} className="my-5">
                             <InputLabel>مبلغ</InputLabel>
                             <TextField
                                 required
                                 fullWidth
-                                name="price"
-                                id="price"
+                                name="amount"
+                                id="amount"
                                 size="small"
-                                value={addCommas(removeNonNumeric(price))}
-                                onChange={(event) => setValue('price', convertPriceToNumber(event.target.value))}
+                                error={!!errors?.amount}
+                                helperText={errors?.amount?.message}
+                                value={addCommas(removeNonNumeric(amount))}
+                                onChange={(event) => setValue('amount', convertPriceToNumber(event.target.value))}
 
                             />
                         </Grid>
-                        <Grid item xs={12} sm={9} className="mx-24 my-5">
+                        <Grid item xs={12} sm={4} className="my-5">
                             <InputLabel>تاریخ</InputLabel>
                             <DatePicker
-                                id="date"
+                                id="datePer"
                                 style={styleDatePicker}
                                 calendar={persian}
                                 locale={persianFa}
                                 placeholder="YYYY/MM/DD"
-                                calendarPosition="bottom-right"
+                                calendarPosition="right-center"
+                                containerStyle={{
+                                    width: '100%'
+                                }}
                                 onChange={(date) => {
                                     const d = new Date(date).toLocaleDateString('fa-IR');
-                                    setValue('date', d);
+                                    setValue('datePer', d);
 
                                 }}
                             />
                         </Grid>
 
-                        <Grid item xs={12} sm={9} className="mx-24 my-5">
+                        <Grid item xs={12} sm={9} className="my-5">
                             <InputLabel>توضیحات</InputLabel>
                             <TextField
                                 id="description"
@@ -205,13 +248,16 @@ export default function TransferMethod({
                         }}
                         css={styleCancelBtn}
                     >
-                        کنسل
+                        <Text color="#fff" size={16} >بستن</Text>
+
                     </Button>
                     <Button
                         onPress={handleSubmit(handleClick)}
+                        size={16}
                         css={styleSaveBtn}
+
                     >
-                        ثبت
+                        <Text color="#fff" size={14} >ثبت</Text>
                     </Button>
                 </Modal.Footer>
             </Modal>

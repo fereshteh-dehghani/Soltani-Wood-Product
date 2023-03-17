@@ -181,6 +181,7 @@ const SalesInvoiceForm = ({
   selectParty,
   saleInvoiceNumber,
   handleSubmit,
+  findPartyBankAccountList,
 }) => {
   // prevent from navigation when form is editing ------------------
 
@@ -345,15 +346,15 @@ const SalesInvoiceForm = ({
       });
   }, []);
 
-  const addCommas = (num) => num?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  const removeNonNumeric = (num) => num?.toString().replace(/[^0-9]/g, '');
-  const convertPriceToNumber = (price) => {
-    if (price !== 0 && typeof price !== 'number') {
-      const numberArray = price.split(',');
-      price = +numberArray.join('');
-    }
-    return price;
-  };
+  // const addCommas = (num) => num?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  // const removeNonNumeric = (num) => num?.toString().replace(/[^0-9]/g, '');
+  // const convertPriceToNumber = (price) => {
+  //   if (price !== 0 && typeof price !== 'number') {
+  //     const numberArray = price.split(',');
+  //     price = +numberArray.join('');
+  //   }
+  //   return price;
+  // };
 
   return (
     <Grid style={{ display: 'flex', flexDirection: 'row' }}>
@@ -377,7 +378,7 @@ const SalesInvoiceForm = ({
                   type="button"
                   onClick={() => callback(setShowHideForm(e => !e))}
                 >
-                  <HorizontalSplitOutlined style={{ color: 'yellow'}} />
+                  <HorizontalSplitOutlined style={{ color: 'yellow' }} />
                 </button>
 
                 <p className="px-4"> فاکتور فروش شماره : </p>
@@ -444,12 +445,12 @@ const SalesInvoiceForm = ({
               <Grid item xs={3} alignItems="center">
                 <Controller
                   valueName="selected"
-                  name="date"
+                  name="datePer"
                   control={control}
                   render={({ field }) => (
                     <DatePicker
                       {...field}
-                      id="date"
+                      id="datePer"
                       style={styleDatePicker}
                       calendar={persian}
                       locale={persianFa}
@@ -459,12 +460,12 @@ const SalesInvoiceForm = ({
                       onChange={(date) => {
                         setIsDataChange(true);
                         const d = new Date(date).toLocaleDateString('fa-IR');
-                        setValue('date', d);
+                        setValue('datePer', d);
                       }}
                     />
                   )}
                 />
-                {errors?.date && <span className="text-danger">{errors.date.message}</span>}
+                {errors?.datePer && <span className="text-danger">{errors.datePer.message}</span>}
               </Grid>
               {/* {saleInvoiceNumber && (
                 <Grid item xs={6}>
@@ -510,6 +511,7 @@ const SalesInvoiceForm = ({
                         selectParty(event.value);
                         setValue('partyId', event.value);
                         setValue('partyRealName', event.label);
+                        findPartyBankAccountList(event.value);
                       }}
                     />
                   )}

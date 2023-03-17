@@ -3,11 +3,13 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
     modalOpenCashPayment: false,
     handleCreditModal: false,
-    handleCardBank: false,
-    handleMethodCheck: false,
+    handlePaymentBank: false,
+    handleReceiptBank: false,
     handleMethodDiscount: false,
     handleDepositToTheAccount: false,
     handleTransferMethod: false,
+    handleReceiptCheque: false,
+    handlePaymentCheque: false,
 }
 
 const handleModalsSlice = createSlice({
@@ -22,19 +24,25 @@ const handleModalsSlice = createSlice({
                 case 'discount':
                     state.handleMethodDiscount = action.payload.isOpen;
                     break;
-                case 'cardBank':
-                    state.handleCardBank = action.payload.isOpen;
+                case 'paymentBank':
+                    state.handlePaymentBank = action.payload.isOpen;
                     break;
-                case 'check':
-                    state.handleMethodCheck = action.payload.isOpen;
+                case 'receiptBank':
+                    state.handleReceiptBank = action.payload.isOpen;
+                    break;
+                case 'recieptCheque':
+                    state.handleReceiptCheque = action.payload.isOpen;
+                    break;
+                case 'paymentCheque':
+                    state.handlePaymentCheque = action.payload.isOpen;
                     break;
                 case 'deposite':
                     state.handleDepositToTheAccount = action.payload.isOpen;
                     break;
-                case 'cash':
+                case 'settlementCashItems':
                     state.modalOpenCashPayment = action.payload.isOpen;
                     break;
-                case 'transfer':
+                case 'offSetting':
                     state.handleTransferMethod = action.payload.isOpen;
                     break;
                 default:

@@ -51,7 +51,10 @@ export default function CreditMethod({ paymentMethodData, operationOptions, addC
 
     const dispatch = useDispatch();
     const { handleCreditModal } = useSelector(({ buyAndSell }) => buyAndSell.handleModalsSlice);
-    const closeHandler = () => dispatch(handleModals({ type: 'credit', isOpen: false }));
+    const closeHandler = () => {
+        dispatch(findPaymentMethodData({}));
+        dispatch(handleModals({ type: 'credit', isOpen: false }))
+    };
 
     const schema = yup.object().shape({
         type: yup.number().required('لطفا نوع پرداخت را مشخص کنید!'),

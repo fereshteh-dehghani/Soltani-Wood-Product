@@ -5,6 +5,11 @@ const initialState = {
   formData: {},
   product: {},
   invoiceItems: [],
+  partyBankAccountList: [],
+  debitPartyInfo: {
+    debitPartyId: -1,
+    debitPartyName: '',
+  }
 };
 
 const salesInvoiceSlice = createSlice({
@@ -45,6 +50,12 @@ const salesInvoiceSlice = createSlice({
     resetInvoiceItems(state, action) {
       state.invoiceItems = action.payload;
     },
+    resetPartyBankAccountlist: (state, action) => {
+      state.partyBankAccountList = action.payload;
+    },
+    resetDebitPartyInfo: (state, action) => {
+      state.debitPartyInfo = action.payload;
+    }
   },
 });
 
@@ -57,6 +68,8 @@ export const {
   updateInvoiceItems,
   getInvoiceItems,
   resetInvoiceItems,
+  resetPartyBankAccountlist,
+  resetDebitPartyInfo
 } = salesInvoiceSlice.actions;
 
 export default salesInvoiceSlice.reducer;

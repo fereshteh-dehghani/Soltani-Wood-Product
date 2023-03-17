@@ -40,7 +40,10 @@ export default function DepositToAccount({ paymentMethodData, optionSelectBank }
 
     const { handleDepositToTheAccount } = useSelector(({ buyAndSell }) => buyAndSell.handleModalsSlice)
     const dispatch = useDispatch();
-    const closeHandler = () => dispatch(handleModals({ type: 'deposite', isOpen: false }));
+    const closeHandler = () => {
+        dispatch(findPaymentMethodData({}));
+        dispatch(handleModals({ type: 'deposite', isOpen: false }))
+    };
 
     const schema = yup.object().shape({
         type: yup.number().required('لطفا نوع پرداخت را مشخص کنید!'),
